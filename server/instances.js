@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { execFile } from "node:child_process";
+import net from "node:net";
 import { config } from "./config.js";
 import { db, getSetting, logEvent, now } from "./db.js";
 import { generatePassword } from "./auth.js";
@@ -99,11 +100,21 @@ export function assertQuota(user, { cpu, memory_mb, disk_gb, newInstance, except
   check(user.max_disk_gb, u.disk_gb, disk_gb, "disk (GB)");
 }
 
-function allocatePort() {
+/** True when nothing on the host is listening on this TCP port. */
+function hostPortFree(port) {
+  return new Promise((resolve) => {
+    const srv = net.createServer();
+    srv.once("error", () => resolve(false));
+    srv.listen({ port, host: "0.0.0.0", exclusive: true }, () => srv.close(() => resolve(true)));
+  });
+}
+
+/** First port in the range that is neither assigned to a container nor used by another program. */
+async function pickPort() {
   const start = Number(getSetting("ssh_port_start")) || 2200;
   const end = Number(getSetting("ssh_port_end")) || 2999;
   const used = new Set(db.prepare("SELECT ssh_port FROM instances WHERE ssh_port IS NOT NULL").all().map((r) => r.ssh_port));
-  for (let p = start; p <= end; p++) if (!used.has(p)) return p;
+  for (let p = start; p <= end; p++) if (!used.has(p) && (await hostPortFree(p))) return p;
   throw new HttpError(503, "No SSH port is left in the configured range. Ask the administrator to widen it.", "no_port");
 }
 
@@ -223,12 +234,13 @@ export async function createInstance(user, { name, imageId, cpu, memoryMb, diskG
   if (key && !SSH_KEY_RE.test(key)) throw new HttpError(400, "That SSH public key is not valid.", "bad_key");
 
   const id = crypto.randomUUID();
+  const port = await pickPort();
   // quota + uniqueness + port in one transaction
   db.exec("BEGIN IMMEDIATE");
   try {
     assertQuota(user, { ...values, newInstance: true });
     if (db.prepare("SELECT 1 FROM instances WHERE name = ?").get(name)) throw new HttpError(409, "That name is already taken.", "name_taken");
-    const port = allocatePort();
+    if (db.prepare("SELECT 1 FROM instances WHERE ssh_port = ?").get(port)) throw new HttpError(409, "Another container was created at the same moment. Try again.", "busy");
     db.prepare(
       `INSERT INTO instances(id,user_id,name,image,cpu,memory_mb,disk_gb,status,progress,ssh_port,ssh_public_key,created_at,updated_at)
        VALUES(?,?,?,?,?,?,?,'creating','queued',?,?,?,?)`,

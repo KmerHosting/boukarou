@@ -12,10 +12,10 @@ ExecStart=/usr/bin/env node server/index.js
 Restart=on-failure
 RestartSec=5
 # The panel drives LXD, nginx, certbot and ufw, so it runs as root.
+# No NoNewPrivileges/ProtectHome: the snap-packaged `lxc` client needs to
+# change its AppArmor profile and write to /root/snap.
 User=root
-NoNewPrivileges=true
 PrivateTmp=true
-ProtectHome=true
 
 [Install]
 WantedBy=multi-user.target

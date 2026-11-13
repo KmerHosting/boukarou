@@ -17,13 +17,17 @@ export function ensureAdmin({ announce = false } = {}) {
   );
   logEvent({ action: "admin.created", message: "admin" });
   fs.writeFileSync(INITIAL_PASSWORD_FILE, `${password}\n`, { mode: 0o600 });
-  if (announce) {
+  // Only print the password on an interactive terminal (dev). Under systemd it
+  // would end up in the journal; the installer reads the file instead.
+  if (announce && process.stdout.isTTY) {
     console.log("──────────────────────────────────────────────");
     console.log(" Administrator account created");
     console.log("   username: admin");
     console.log(`   password: ${password}`);
     console.log(` (also saved to ${INITIAL_PASSWORD_FILE})`);
     console.log("──────────────────────────────────────────────");
+  } else if (announce) {
+    console.log(`Administrator account "admin" created. Password saved to ${INITIAL_PASSWORD_FILE}`);
   }
   return password;
 }

@@ -47,6 +47,7 @@ const exact = {
   "Your current password is not correct.": "Votre mot de passe actuel est incorrect.",
   "Your password is not correct.": "Votre mot de passe est incorrect.",
   "Your sign-in expired. Start again.": "Votre connexion a expiré. Recommencez.",
+  "Another container was created at the same moment. Try again.": "Un autre conteneur a été créé au même moment. Réessayez.",
   "vCPU must be a whole number from 1.": "Le nombre de vCPU doit être un entier à partir de 1.",
   "Please sign in.": "Veuillez vous connecter.",
   "Choose a new password first.": "Choisissez d’abord un nouveau mot de passe.",

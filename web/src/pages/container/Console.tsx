@@ -4,6 +4,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { t } from "../../lib/i18n";
 import type { Instance } from "../../lib/types";
 import { Button } from "../../components/ui";
+import { RestartIcon } from "../../components/icons";
 
 export function ConsoleTab({ inst }: { inst: Instance }) {
   const box = useRef<HTMLDivElement>(null);
@@ -14,7 +15,7 @@ export function ConsoleTab({ inst }: { inst: Instance }) {
   useEffect(() => {
     if (!running || !box.current) return;
     const term = new Terminal({
-      fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
+      fontFamily: '"JetBrains Mono", ui-monospace, monospace',
       fontSize: 13.5,
       cursorBlink: true,
       scrollback: 5000,
@@ -65,7 +66,7 @@ export function ConsoleTab({ inst }: { inst: Instance }) {
         <span className="muted" style={{ fontSize: 13 }}>
           {state === "open" ? t("Connected as root.") : state === "connecting" ? t("Connecting…") : t("Disconnected.")}
         </span>
-        {state === "closed" && <Button size="sm" onClick={() => setAttempt((a) => a + 1)}>{t("Reconnect")}</Button>}
+        {state === "closed" && <Button size="sm" icon={<RestartIcon size={15} />} onClick={() => setAttempt((a) => a + 1)}>{t("Reconnect")}</Button>}
       </div>
       <div className="term-wrap">
         <div ref={box} className="term" />

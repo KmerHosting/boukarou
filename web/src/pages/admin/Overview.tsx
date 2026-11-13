@@ -4,6 +4,7 @@ import { bytes, duration, memory } from "../../lib/format";
 import type { EventItem } from "../../lib/types";
 import { ErrorState, Loading, Meter, useApi } from "../../components/ui";
 import { EventRow } from "../../components/Events";
+import { ActivityIcon, ContainerIcon, CpuIcon, DiskIcon, MemoryIcon, NextIcon, SettingsIcon, UserPlusIcon } from "../../components/icons";
 
 type Data = {
   host: { hostname: string; cpus: number; load: number[]; memTotal: number; memFree: number; uptime: number; platform: string };
@@ -38,30 +39,30 @@ export function AdminOverview() {
           <h1>{t("Overview")}</h1>
           <p><span className="mono">{host.hostname}</span> · {host.platform} · {t("up {d}", { d: duration(host.uptime) })}</p>
         </div>
-        <Link to="/admin/users" className="btn btn-primary">{t("New user")}</Link>
+        <Link to="/admin/users" className="btn btn-primary"><UserPlusIcon size={16} />{t("New user")}</Link>
       </div>
       <div className="stack">
         {warnings.map((w, i) => <div key={i} className="warn-box">{w}</div>)}
         <div className="grid grid-4">
           <div className="card stat">
-            <div className="k">{t("Containers")}</div>
+            <div className="k"><ContainerIcon size={16} />{t("Containers")}</div>
             <div className="v">{counts.total}</div>
             <div className="s">{t("{r} running · {s} stopped", { r: counts.running || 0, s: counts.stopped || 0 })}{counts.failed ? ` · ${t("{f} failed", { f: counts.failed })}` : ""}</div>
           </div>
           <div className="card stat">
-            <div className="k">{t("CPU")}</div>
+            <div className="k"><CpuIcon size={16} />{t("CPU")}</div>
             <div className="v">{host.load[0].toFixed(2)}</div>
             <div className="s">{t("load on {n} cores · {a} vCPU allocated", { n: host.cpus, a: counts.cpu })}</div>
             <Meter value={host.load[0]} max={host.cpus} />
           </div>
           <div className="card stat">
-            <div className="k">{t("Memory")}</div>
+            <div className="k"><MemoryIcon size={16} />{t("Memory")}</div>
             <div className="v">{bytes(memUsed)}</div>
             <div className="s">{t("of {t} · {a} allocated", { t: bytes(host.memTotal), a: memory(counts.memory_mb) })}</div>
             <Meter value={memUsed} max={host.memTotal} />
           </div>
           <div className="card stat">
-            <div className="k">{t("Storage pool")}</div>
+            <div className="k"><DiskIcon size={16} />{t("Storage pool")}</div>
             <div className="v">{pool ? bytes(pool.used) : "—"}</div>
             <div className="s">{pool ? t("of {t} · {a} GB allocated", { t: bytes(pool.total), a: counts.disk_gb }) : t("unknown")}</div>
             {pool && <Meter value={pool.used} max={pool.total} />}
@@ -70,7 +71,7 @@ export function AdminOverview() {
 
         <div className="grid grid-2">
           <section className="card">
-            <div className="card-head"><h2>{t("Runtime")}</h2></div>
+            <div className="card-head"><h2 className="h-icon"><SettingsIcon size={18} />{t("Runtime")}</h2></div>
             <div className="card-body">
               <dl className="kv">
                 <dt>{t("Engine")}</dt><dd>{runtime.ok ? `${runtime.server} ${runtime.version}` : <span style={{ color: "var(--bad)" }}>{t("unavailable")}</span>}</dd>
@@ -86,8 +87,8 @@ export function AdminOverview() {
           </section>
           <section className="card">
             <div className="card-head">
-              <h2>{t("Recent activity")}</h2>
-              <Link to="/admin/activity" className="btn btn-sm btn-ghost">{t("All activity")}</Link>
+              <h2 className="h-icon"><ActivityIcon size={18} />{t("Recent activity")}</h2>
+              <Link to="/admin/activity" className="btn btn-sm btn-ghost">{t("All activity")}<NextIcon size={14} /></Link>
             </div>
             {data.events.length ? data.events.slice(0, 8).map((e) => <EventRow key={e.id} e={e} showUser />) : <div className="card-body muted">{t("Nothing yet.")}</div>}
           </section>

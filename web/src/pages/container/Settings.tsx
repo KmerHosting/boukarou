@@ -5,6 +5,7 @@ import { t } from "../../lib/i18n";
 import type { Image } from "../../lib/types";
 import { Button, ConfirmModal, Field, useApi, useToast } from "../../components/ui";
 import type { Detail } from "../Container";
+import { KeyIcon, PasswordIcon, ReinstallIcon, TrashIcon } from "../../components/icons";
 
 export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () => void; onPassword: (p: string) => void }) {
   const inst = d.instance;
@@ -23,10 +24,10 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
       <section className="card">
         <div className="card-head">
           <div>
-            <h2>{t("Root password")}</h2>
+            <h2 className="h-icon"><PasswordIcon size={18} />{t("Root password")}</h2>
             <p>{t("Generate a new root password. The old one stops working right away.")}</p>
           </div>
-          <Button loading={pwBusy} disabled={!running} onClick={async () => {
+          <Button icon={<KeyIcon size={16} />} loading={pwBusy} disabled={!running} onClick={async () => {
             setPwBusy(true);
             try {
               const r = await post<{ password: string }>(`/api/instances/${inst.id}/root-password`);
@@ -44,7 +45,7 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
       <section className="card danger-zone">
         <div className="card-head">
           <div>
-            <h2>{t("Reinstall")}</h2>
+            <h2 className="h-icon"><ReinstallIcon size={18} />{t("Reinstall")}</h2>
             <p>{t("Wipe the disk and start again from a fresh system. Name, IP address, SSH port and domains are kept.")}</p>
           </div>
         </div>
@@ -60,7 +61,7 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
             </Field>
           </div>
           <div style={{ marginTop: 16 }}>
-            <Button variant="danger" disabled={!!inst.busy || inst.status === "reinstalling"} onClick={() => setConfirmReinstall(true)}>{t("Reinstall…")}</Button>
+            <Button variant="danger" icon={<ReinstallIcon size={16} />} disabled={!!inst.busy || inst.status === "reinstalling"} onClick={() => setConfirmReinstall(true)}>{t("Reinstall…")}</Button>
           </div>
         </div>
       </section>
@@ -68,10 +69,10 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
       <section className="card danger-zone">
         <div className="card-head">
           <div>
-            <h2>{t("Delete container")}</h2>
+            <h2 className="h-icon"><TrashIcon size={18} />{t("Delete container")}</h2>
             <p>{t("Removes the container, its snapshots and its domains. This cannot be undone.")}</p>
           </div>
-          <Button variant="danger" disabled={!!inst.busy} onClick={() => setConfirmDelete(true)}>{t("Delete…")}</Button>
+          <Button variant="danger" icon={<TrashIcon size={16} />} disabled={!!inst.busy} onClick={() => setConfirmDelete(true)}>{t("Delete…")}</Button>
         </div>
       </section>
 
@@ -81,6 +82,7 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
           description={t("All files on the container are erased. Take a snapshot first if you may need them.")}
           word={inst.name}
           action={t("Reinstall")}
+          icon={<ReinstallIcon size={16} />}
           onClose={() => setConfirmReinstall(false)}
           onConfirm={async () => {
             await post(`/api/instances/${inst.id}/reinstall`, { imageId, sshKey: sshKey.trim() || undefined, confirm: inst.name });
@@ -96,6 +98,7 @@ export function SettingsTab({ d, reload, onPassword }: { d: Detail; reload: () =
           description={t("The container, its snapshots and its domains are removed for good.")}
           word={inst.name}
           action={t("Delete container")}
+          icon={<TrashIcon size={16} />}
           onClose={() => setConfirmDelete(false)}
           onConfirm={async () => {
             await del(`/api/instances/${inst.id}`, { confirm: inst.name });

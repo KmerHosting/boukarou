@@ -4,6 +4,7 @@ import { t } from "../../lib/i18n";
 import { date } from "../../lib/format";
 import { Button, ConfirmModal, Loading, useApi, useToast } from "../../components/ui";
 import type { Detail } from "../Container";
+import { RestoreIcon, SnapshotIcon, TrashIcon } from "../../components/icons";
 
 type Snap = { name: string; createdAt: number; stateful: boolean };
 
@@ -39,14 +40,14 @@ export function SnapshotsTab({ d, reload }: { d: Detail; reload: () => void }) {
       <section className="card">
         <div className="card-head">
           <div>
-            <h2>{t("Take a snapshot")}</h2>
+            <h2 className="h-icon"><SnapshotIcon size={18} />{t("Take a snapshot")}</h2>
             <p>{t("A snapshot saves the whole disk as it is now. Restoring it rolls the container back.")}</p>
           </div>
           <span className="mono muted">{snaps.length} / {max == null ? "∞" : max}</span>
         </div>
         <form className="card-body input-row" onSubmit={create}>
           <input className="input mono" placeholder={t("Name (optional)")} value={name} onChange={(e) => setName(e.target.value)} maxLength={63} disabled={full} />
-          <Button type="submit" variant="primary" loading={busy} disabled={full}>{t("Take snapshot")}</Button>
+          <Button type="submit" variant="primary" icon={<SnapshotIcon size={16} />} loading={busy} disabled={full}>{t("Take snapshot")}</Button>
         </form>
         {full && <div className="card-body" style={{ paddingTop: 0 }}><p className="hint">{t("You reached your snapshot limit for this container. Delete one to take another.")}</p></div>}
       </section>
@@ -64,8 +65,8 @@ export function SnapshotsTab({ d, reload }: { d: Detail; reload: () => void }) {
                 <div className="hint">{date(s.createdAt)}</div>
               </div>
               <div className="btn-group">
-                <Button size="sm" onClick={() => setRestore(s)}>{t("Restore")}</Button>
-                <Button size="sm" variant="danger" onClick={() => setRemove(s)}>{t("Delete")}</Button>
+                <Button size="sm" icon={<RestoreIcon size={15} />} onClick={() => setRestore(s)}>{t("Restore")}</Button>
+                <Button size="sm" variant="danger" icon={<TrashIcon size={15} />} onClick={() => setRemove(s)}>{t("Delete")}</Button>
               </div>
             </div>
           ))
@@ -77,6 +78,7 @@ export function SnapshotsTab({ d, reload }: { d: Detail; reload: () => void }) {
           title={t("Restore {s}?", { s: restore.name })}
           description={t("Everything written since {d} is lost. The container restarts in the state it had then.", { d: date(restore.createdAt) })}
           action={t("Restore snapshot")}
+          icon={<RestoreIcon size={16} />}
           word={inst.name}
           onClose={() => setRestore(null)}
           onConfirm={async () => {
@@ -91,6 +93,7 @@ export function SnapshotsTab({ d, reload }: { d: Detail; reload: () => void }) {
           title={t("Delete {s}?", { s: remove.name })}
           description={t("The snapshot is removed for good.")}
           action={t("Delete snapshot")}
+          icon={<TrashIcon size={16} />}
           onClose={() => setRemove(null)}
           onConfirm={async () => {
             await del(`/api/instances/${inst.id}/snapshots/${encodeURIComponent(remove.name)}`);

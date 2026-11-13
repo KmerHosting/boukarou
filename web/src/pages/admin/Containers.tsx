@@ -3,6 +3,7 @@ import { t } from "../../lib/i18n";
 import type { Instance } from "../../lib/types";
 import { ErrorState, Loading, useApi } from "../../components/ui";
 import { InstanceTable } from "../Containers";
+import { SearchIcon } from "../../components/icons";
 
 export function AdminContainers() {
   const { data, error, loading, reload } = useApi<{ instances: Instance[] }>("/api/admin/instances", {
@@ -22,7 +23,10 @@ export function AdminContainers() {
           <h1>{t("All containers")}</h1>
           <p>{t("Every container on this server. Open one to manage it as its owner would.")}</p>
         </div>
-        <input className="input" style={{ width: 260 }} placeholder={t("Search name, owner, IP, port…")} value={q} onChange={(e) => setQ(e.target.value)} />
+        <label className="search">
+          <SearchIcon size={16} />
+          <input className="input" placeholder={t("Search name, owner, IP, port…")} value={q} onChange={(e) => setQ(e.target.value)} />
+        </label>
       </div>
       {items.length ? <InstanceTable items={items} showOwner /> : <div className="card card-pad muted">{t("No containers.")}</div>}
     </>

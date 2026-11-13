@@ -5,6 +5,7 @@ import { t } from "../lib/i18n";
 import { memory } from "../lib/format";
 import type { Image, Instance, Limits, Usage } from "../lib/types";
 import { Button, ErrorState, Field, Loading, OsTile, Stepper, useApi } from "../components/ui";
+import { ContainerIcon, CpuIcon, DiskIcon, KeyIcon, PlusIcon, ShuffleIcon } from "../components/icons";
 
 type Overview = { usage: Usage; limits: Limits; diskQuotaEnforced: boolean; host: { cpus: number; memoryMb: number } };
 
@@ -90,19 +91,19 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
       <div className="split">
         <div className="stack">
           <section className="card">
-            <div className="card-head"><h2>{t("Name")}</h2></div>
+            <div className="card-head"><h2 className="h-icon"><ContainerIcon size={18} />{t("Name")}</h2></div>
             <div className="card-body">
               <Field label={t("Container name")} hint={t("Lowercase letters, digits and hyphens. Also used as the hostname.")} htmlFor="name">
                 <div className="input-row">
                   <input id="name" className="input mono" value={name} aria-invalid={!nameOk} spellCheck={false} autoComplete="off" maxLength={32} onChange={(e) => setName(e.target.value.toLowerCase())} />
-                  <Button onClick={() => setName(suggestName())}>{t("Suggest")}</Button>
+                  <Button icon={<ShuffleIcon size={16} />} onClick={() => setName(suggestName())}>{t("Suggest")}</Button>
                 </div>
               </Field>
             </div>
           </section>
 
           <section className="card">
-            <div className="card-head"><h2>{t("Operating system")}</h2></div>
+            <div className="card-head"><h2 className="h-icon"><DiskIcon size={18} />{t("Operating system")}</h2></div>
             <div className="card-body">
               <div className="os-grid">
                 {families.map(([family, list]) => {
@@ -134,7 +135,7 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
           <section className="card">
             <div className="card-head">
               <div>
-                <h2>{t("Resources")}</h2>
+                <h2 className="h-icon"><CpuIcon size={18} />{t("Resources")}</h2>
                 <p>{t("Only what you allocate counts against your limits.")}</p>
               </div>
             </div>
@@ -167,10 +168,10 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
           <section className="card">
             <div className="card-head">
               <div>
-                <h2>{t("SSH key")} <span className="muted" style={{ fontWeight: 400 }}>· {t("optional")}</span></h2>
+                <h2 className="h-icon"><KeyIcon size={18} />{t("SSH key")} <span className="muted" style={{ fontWeight: 400 }}>· {t("optional")}</span></h2>
                 <p>{t("A root password is always generated. Add a public key to sign in without it.")}</p>
               </div>
-              {!showKey && <Button size="sm" onClick={() => setShowKey(true)}>{t("Add key")}</Button>}
+              {!showKey && <Button size="sm" icon={<KeyIcon size={15} />} onClick={() => setShowKey(true)}>{t("Add key")}</Button>}
             </div>
             {showKey && (
               <div className="card-body">
@@ -192,7 +193,7 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
               <dt>{t("Access")}</dt><dd>{sshKey.trim() ? t("Password + key") : t("Password")}</dd>
             </dl>
             {error && <p className="form-error">{error}</p>}
-            <Button type="submit" variant="primary" loading={busy} disabled={!nameOk || !imageId || full || noRoom} style={{ width: "100%", marginTop: 18, height: 38 }}>
+            <Button type="submit" variant="primary" icon={<PlusIcon size={16} weight="bold" />} loading={busy} disabled={!nameOk || !imageId || full || noRoom} style={{ width: "100%", marginTop: 18, height: 38 }}>
               {t("Create container")}
             </Button>
             <p className="hint" style={{ marginTop: 10 }}>{t("The first container from a system takes longer while the image downloads.")}</p>

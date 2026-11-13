@@ -125,6 +125,8 @@ async function allocateIpv4() {
   const prefix = `${m[1]}.${m[2]}.${m[3]}.`;
   const used = new Set(db.prepare("SELECT ipv4 FROM instances WHERE ipv4 IS NOT NULL").all().map((r) => r.ipv4));
   used.add(ipv4.split("/")[0]);
+  // Addresses already pinned or leased on this bridge by any LXD project (another panel, manual containers…)
+  for (const ip of await lxd.addressesOnNetwork().catch(() => [])) used.add(ip);
   for (let i = 20; i < 250; i++) if (!used.has(prefix + i)) return prefix + i;
   return null;
 }

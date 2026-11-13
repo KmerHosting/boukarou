@@ -2,8 +2,9 @@ import { Link, useNavigate } from "react-router";
 import { t } from "../lib/i18n";
 import { memory } from "../lib/format";
 import type { Instance, Limits, Usage } from "../lib/types";
-import { ErrorState, HutIllustration, Loading, OsTile, StatusBadge, useApi } from "../components/ui";
+import { ErrorState, Loading, Logo, OsTile, StatusBadge, useApi } from "../components/ui";
 import { QuotaStrip } from "../components/Quota";
+import { PlusIcon } from "../components/icons";
 
 type Overview = { instances: Instance[]; usage: Usage; limits: Limits };
 
@@ -80,7 +81,7 @@ export function Containers() {
         {full ? (
           <span className="tag tag-warn" title={t("Delete a container or ask your administrator for a higher limit.")}>{t("Container limit reached")}</span>
         ) : (
-          <Link to="/new" className="btn btn-primary">{t("New container")}</Link>
+          <Link to="/new" className="btn btn-primary"><PlusIcon size={16} weight="bold" />{t("New container")}</Link>
         )}
       </div>
       <div className="stack">
@@ -89,10 +90,10 @@ export function Containers() {
           <InstanceTable items={data.instances} />
         ) : (
           <div className="card empty">
-            <HutIllustration />
+            <div className="empty-art"><Logo size={88} /></div>
             <h2>{t("No containers yet")}</h2>
             <p>{t("Create your first container. It takes about a minute.")}</p>
-            {!full && <Link to="/new" className="btn btn-primary">{t("New container")}</Link>}
+            {!full && <Link to="/new" className="btn btn-primary"><PlusIcon size={16} weight="bold" />{t("New container")}</Link>}
           </div>
         )}
       </div>

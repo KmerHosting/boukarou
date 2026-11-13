@@ -6,6 +6,7 @@ import { useSession } from "../../lib/session";
 import type { Limits, Usage } from "../../lib/types";
 import { Button, Field, Stepper, useApi, useToast } from "../../components/ui";
 import type { Detail } from "../Container";
+import { CheckIcon, ResizeIcon, RetryIcon } from "../../components/icons";
 
 export function ResizeTab({ d, reload }: { d: Detail; reload: () => void }) {
   const inst = d.instance;
@@ -30,7 +31,7 @@ export function ResizeTab({ d, reload }: { d: Detail; reload: () => void }) {
     <section className="card">
       <div className="card-head">
         <div>
-          <h2>{t("Resize")}</h2>
+          <h2 className="h-icon"><ResizeIcon size={18} />{t("Resize")}</h2>
           <p>{t("CPU and memory change live, without a restart. Disk can only grow.")}</p>
         </div>
       </div>
@@ -48,7 +49,7 @@ export function ResizeTab({ d, reload }: { d: Detail; reload: () => void }) {
         </div>
         {!d.diskQuotaEnforced && <p className="hint" style={{ marginTop: 12 }}>{t("This server's storage does not enforce disk sizes. The size is recorded but not applied.")}</p>}
         <div className="btn-group" style={{ marginTop: 18 }}>
-          <Button variant="primary" disabled={!changed} loading={busy} onClick={async () => {
+          <Button variant="primary" icon={<CheckIcon size={16} weight="bold" />} disabled={!changed} loading={busy} onClick={async () => {
             setBusy(true);
             try {
               await post(`/api/instances/${inst.id}/resize`, { cpu, memoryMb: mem, diskGb: disk });
@@ -60,7 +61,7 @@ export function ResizeTab({ d, reload }: { d: Detail; reload: () => void }) {
               setBusy(false);
             }
           }}>{t("Apply")}</Button>
-          {changed && <Button variant="ghost" onClick={() => { setCpu(inst.cpu); setMem(inst.memoryMb); setDisk(inst.diskGb); }}>{t("Reset")}</Button>}
+          {changed && <Button variant="ghost" icon={<RetryIcon size={16} />} onClick={() => { setCpu(inst.cpu); setMem(inst.memoryMb); setDisk(inst.diskGb); }}>{t("Reset")}</Button>}
         </div>
       </div>
     </section>

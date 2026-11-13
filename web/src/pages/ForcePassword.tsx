@@ -3,6 +3,7 @@ import { post } from "../lib/api";
 import { t } from "../lib/i18n";
 import { useSession } from "../lib/session";
 import { Button, Field, Logo } from "../components/ui";
+import { CheckIcon, SignOutIcon } from "../components/icons";
 
 export function ForcePassword() {
   const { user, refresh, setUser } = useSession();
@@ -30,7 +31,7 @@ export function ForcePassword() {
     <div className="auth">
       <div className="auth-box">
         <div className="brand">
-          <Logo size={28} />
+          <Logo size={46} />
           <span>Boukarou</span>
         </div>
         <form className="card auth-card" onSubmit={submit}>
@@ -46,10 +47,10 @@ export function ForcePassword() {
             <input id="rep" className="input" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </Field>
           {error && <p className="form-error">{error}</p>}
-          <Button type="submit" variant="primary" loading={busy} style={{ width: "100%", marginTop: 18, height: 38 }} disabled={!current || password.length < 10}>
+          <Button type="submit" variant="primary" icon={<CheckIcon size={16} weight="bold" />} loading={busy} style={{ width: "100%", marginTop: 18, height: 38 }} disabled={!current || password.length < 10}>
             {t("Save and continue")}
           </Button>
-          <Button variant="ghost" style={{ width: "100%", marginTop: 6 }} onClick={async () => { await post("/api/auth/logout").catch(() => {}); setUser(null); }}>
+          <Button variant="ghost" icon={<SignOutIcon size={16} />} style={{ width: "100%", marginTop: 6 }} onClick={async () => { await post("/api/auth/logout").catch(() => {}); setUser(null); }}>
             {t("Sign out")}
           </Button>
         </form>

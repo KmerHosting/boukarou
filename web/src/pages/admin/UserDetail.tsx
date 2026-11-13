@@ -4,10 +4,11 @@ import { del, patch, post } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { ago, date } from "../../lib/format";
 import type { AdminUser, Instance } from "../../lib/types";
-import { Button, ConfirmModal, ErrorState, Field, Loading, SecretModal, useApi, useToast } from "../../components/ui";
+import { Button, ConfirmModal, ErrorState, Field, SecretModal, useApi, useToast } from "../../components/ui";
 import { LimitsEditor, fromDraft, toDraft, type LimitDraft } from "../../components/LimitsEditor";
 import { InstanceTable } from "../Containers";
 import { CpuIcon, DisableIcon, EnableIcon, PasswordIcon, SaveIcon, ShieldSlashIcon, TrashIcon } from "../../components/icons";
+import { FormPageSkeleton } from "../../components/Skeleton";
 
 export function AdminUser() {
   const { uid } = useParams();
@@ -29,7 +30,7 @@ export function AdminUser() {
     }
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (users.loading && !users.data) return <Loading />;
+  if (users.loading && !users.data) return <FormPageSkeleton />;
   if (!users.data) return <ErrorState error={users.error} retry={users.reload} />;
   if (!user) return <ErrorState error={null} />;
   const isAdmin = user.role === "admin";
@@ -52,8 +53,8 @@ export function AdminUser() {
         <div>
           <h1 className="mono" style={{ fontWeight: 500 }}>{user.username}</h1>
           <p>
-            {isAdmin ? t("Administrator") : t("User")} · {t("created {d}", { d: date(user.createdAt) })} · {t("last sign-in {d}", { d: ago(user.lastLoginAt) })}
-            {user.disabled && <> · <span className="tag tag-bad">{t("Disabled")}</span></>}
+            {isAdmin ? t("Administrator") : t("User")} | {t("created {d}", { d: date(user.createdAt) })} | {t("last sign-in {d}", { d: ago(user.lastLoginAt) })}
+            {user.disabled && <> | <span className="tag tag-bad">{t("Disabled")}</span></>}
           </p>
         </div>
         {!isAdmin && (
@@ -97,7 +98,7 @@ export function AdminUser() {
         )}
 
         <section>
-          <h2 style={{ margin: "8px 0 12px" }}>{t("Containers")} <span className="muted" style={{ fontWeight: 400 }}>· {theirs.length}</span></h2>
+          <h2 style={{ margin: "8px 0 12px" }}>{t("Containers")} <span className="muted" style={{ fontWeight: 400 }}>| {theirs.length}</span></h2>
           {theirs.length ? <InstanceTable items={theirs} /> : <div className="card card-pad muted">{t("No containers.")}</div>}
         </section>
 

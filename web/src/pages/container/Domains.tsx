@@ -2,8 +2,9 @@ import { FormEvent, useState } from "react";
 import { del, post } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import type { Instance } from "../../lib/types";
-import { Button, ConfirmModal, Field, Loading, useApi, useToast } from "../../components/ui";
+import { Button, ConfirmModal, Field, useApi, useToast } from "../../components/ui";
 import { DomainIcon, ExternalIcon, PlusIcon, TrashIcon } from "../../components/icons";
+import { CardSkeleton, RowsSkeleton } from "../../components/Skeleton";
 
 type Domain = { id: string; domain: string; targetPort: number; status: string; error: string | null };
 type Resp = { available: boolean; reason: string | null; publicHost: string | null; domains: Domain[] };
@@ -19,7 +20,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
   const [error, setError] = useState("");
   const [remove, setRemove] = useState<Domain | null>(null);
 
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <div className="stack"><CardSkeleton lines={4} /><RowsSkeleton rows={2} /></div>;
   if (!data) return null;
 
   async function add(e: FormEvent) {

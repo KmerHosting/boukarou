@@ -21,7 +21,7 @@ export function Account() {
         <div>
           <h1>{t("Account & security")}</h1>
           <p>
-            <span className="mono">{user.username}</span> · {isAdmin ? t("Administrator") : t("User")} · {t("Member since {d}", { d: date(user.createdAt) })}
+            <span className="mono">{user.username}</span> | {isAdmin ? t("Administrator") : t("User")} | {t("Member since {d}", { d: date(user.createdAt) })}
           </p>
         </div>
       </div>

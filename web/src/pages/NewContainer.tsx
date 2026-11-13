@@ -4,8 +4,9 @@ import { post } from "../lib/api";
 import { t } from "../lib/i18n";
 import { memory } from "../lib/format";
 import type { Image, Instance, Limits, Usage } from "../lib/types";
-import { Button, ErrorState, Field, Loading, OsTile, Stepper, useApi } from "../components/ui";
+import { Button, ErrorState, Field, OsTile, Stepper, useApi } from "../components/ui";
 import { ContainerIcon, CpuIcon, DiskIcon, KeyIcon, PlusIcon, ShuffleIcon } from "../components/icons";
+import { FormPageSkeleton } from "../components/Skeleton";
 
 type Overview = { usage: Usage; limits: Limits; diskQuotaEnforced: boolean; host: { cpus: number; memoryMb: number } };
 
@@ -21,7 +22,7 @@ const PRESETS = [
 export function NewContainer() {
   const overview = useApi<Overview>("/api/overview");
   const images = useApi<{ images: Image[] }>("/api/images");
-  if ((overview.loading && !overview.data) || (images.loading && !images.data)) return <Loading />;
+  if ((overview.loading && !overview.data) || (images.loading && !images.data)) return <FormPageSkeleton aside />;
   if (!overview.data || !images.data) return <ErrorState error={overview.error || images.error} retry={() => { overview.reload(); images.reload(); }} />;
   return <Form overview={overview.data} images={images.data.images} />;
 }
@@ -144,7 +145,7 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
                 {PRESETS.map((p) => (
                   <button type="button" key={p.key} className="preset" onClick={() => { setCpu(fit(p.cpu, remaining.cpu, 1)); setMem(fit(p.mem, remaining.mem, 128)); setDisk(fit(p.disk, remaining.disk, 1)); }}>
                     <b>{t(p.label)}</b>
-                    <span>{p.cpu} vCPU · {memory(p.mem)} · {p.disk} GB</span>
+                    <span>{p.cpu} vCPU | {memory(p.mem)} | {p.disk} GB</span>
                   </button>
                 ))}
               </div>
@@ -168,7 +169,7 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
           <section className="card">
             <div className="card-head">
               <div>
-                <h2 className="h-icon"><KeyIcon size={18} />{t("SSH key")} <span className="muted" style={{ fontWeight: 400 }}>· {t("optional")}</span></h2>
+                <h2 className="h-icon"><KeyIcon size={18} />{t("SSH key")} <span className="muted" style={{ fontWeight: 400 }}>| {t("optional")}</span></h2>
                 <p>{t("A root password is always generated. Add a public key to sign in without it.")}</p>
               </div>
               {!showKey && <Button size="sm" icon={<KeyIcon size={15} />} onClick={() => setShowKey(true)}>{t("Add key")}</Button>}
@@ -185,8 +186,8 @@ function Form({ overview, images }: { overview: Overview; images: Image[] }) {
           <div className="card-head"><h2>{t("Summary")}</h2></div>
           <div className="card-body">
             <dl>
-              <dt>{t("Name")}</dt><dd>{name || "—"}</dd>
-              <dt>{t("System")}</dt><dd>{selected ? `${selected.name} ${selected.version}` : "—"}</dd>
+              <dt>{t("Name")}</dt><dd>{name || "-"}</dd>
+              <dt>{t("System")}</dt><dd>{selected ? `${selected.name} ${selected.version}` : "-"}</dd>
               <dt>{t("vCPU")}</dt><dd>{cpu}</dd>
               <dt>{t("Memory")}</dt><dd>{memory(mem)}</dd>
               <dt>{t("Disk")}</dt><dd>{disk} GB</dd>

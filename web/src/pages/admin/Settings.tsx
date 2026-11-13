@@ -2,15 +2,16 @@ import { useMemo, useState } from "react";
 import { put } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import type { Image, Limits } from "../../lib/types";
-import { Button, ErrorState, Field, Loading, OsTile, useApi, useToast } from "../../components/ui";
+import { Button, ErrorState, Field, OsTile, useApi, useToast } from "../../components/ui";
 import { LimitsEditor, LIMIT_FIELDS, toDraft, type LimitDraft } from "../../components/LimitsEditor";
 import { DiskIcon, DomainIcon, SaveIcon, UsersIcon } from "../../components/icons";
+import { FormPageSkeleton } from "../../components/Skeleton";
 
 type Data = { settings: Record<string, string>; images: Image[] };
 
 export function AdminSettings() {
   const { data, error, loading, reload } = useApi<Data>("/api/admin/settings");
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <FormPageSkeleton />;
   if (!data) return <ErrorState error={error} retry={reload} />;
   return <Form data={data} reload={reload} />;
 }

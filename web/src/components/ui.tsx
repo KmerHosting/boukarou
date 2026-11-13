@@ -45,33 +45,7 @@ export function StatusBadge({ status, busy }: { status: Status; busy?: string | 
   );
 }
 
-// ---------- OS tile ----------
-const OS_COLORS: Record<string, [string, string]> = {
-  ubuntu: ["#c9542c", "Ub"],
-  debian: ["#a3123a", "De"],
-  alpine: ["#1f5e86", "Al"],
-  rocky: ["#10875a", "Rk"],
-  alma: ["#2a62b5", "Am"],
-  centos: ["#5b2f8f", "Ce"],
-  fedora: ["#294172", "Fe"],
-  amazon: ["#b86b00", "Az"],
-  arch: ["#1478b8", "Ar"],
-  gentoo: ["#54487a", "Ge"],
-  oracle: ["#b0281e", "Or"],
-  openeuler: ["#1f4fa0", "oE"],
-  opensuse: ["#3d8f47", "Su"],
-  devuan: ["#5a5d63", "Dv"],
-  mint: ["#5d9e3a", "Mi"],
-  alt: ["#c08a0a", "Alt"],
-};
-export function OsTile({ family, large }: { family: string; large?: boolean }) {
-  const [bg, label] = OS_COLORS[family] || ["#6e6a63", "Lx"];
-  return (
-    <span className={`os${large ? " os-lg" : ""}`} style={{ background: bg }} aria-hidden="true">
-      {label}
-    </span>
-  );
-}
+export { OsTile } from "./OsLogo";
 
 // ---------- meter ----------
 export function Meter({ value, max }: { value: number; max: number | null }) {
@@ -294,14 +268,6 @@ export function useApi<T>(path: string | null, { poll }: { poll?: number | ((d: 
     return () => clearTimeout(timer);
   }, [poll, load]);
   return { data, error, loading, reload: load, setData };
-}
-
-export function Loading() {
-  return (
-    <div className="loading">
-      <span className="spin" />
-    </div>
-  );
 }
 
 export function ErrorState({ error, retry }: { error: ApiError | null; retry?: () => void }) {

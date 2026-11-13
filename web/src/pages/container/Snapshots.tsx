@@ -2,9 +2,10 @@ import { FormEvent, useState } from "react";
 import { del, post } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { date } from "../../lib/format";
-import { Button, ConfirmModal, Loading, useApi, useToast } from "../../components/ui";
+import { Button, ConfirmModal, useApi, useToast } from "../../components/ui";
 import type { Detail } from "../Container";
 import { RestoreIcon, SnapshotIcon, TrashIcon } from "../../components/icons";
+import { RowsSkeleton } from "../../components/Skeleton";
 
 type Snap = { name: string; createdAt: number; stateful: boolean };
 
@@ -54,7 +55,7 @@ export function SnapshotsTab({ d, reload }: { d: Detail; reload: () => void }) {
 
       <section className="card">
         {list.loading && !list.data ? (
-          <Loading />
+          <RowsSkeleton rows={3} />
         ) : snaps.length === 0 ? (
           <div className="card-body muted">{t("No snapshots yet.")}</div>
         ) : (

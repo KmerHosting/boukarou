@@ -410,3 +410,17 @@ table.table { width: 100%; border-collapse: collapse; }
 .empty-art { display: flex; justify-content: center; margin-bottom: 14px; }
 .lang-btn { display: inline-flex; align-items: center; gap: 5px; }
 @media (max-width: 680px) { .nav .nav-label { display: none; } .nav a { padding: 0 10px; } }
+
+/* ---------- skeletons ---------- */
+.skel {
+  display: block; flex: none; max-width: 100%;
+  background: linear-gradient(90deg, var(--sunken) 0%, color-mix(in srgb, var(--sunken) 55%, var(--surface)) 50%, var(--sunken) 100%);
+  background-size: 200% 100%;
+  animation: skel 1.3s ease-in-out infinite;
+}
+@keyframes skel { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
+.skel-row { display: grid; grid-template-columns: minmax(200px, 2fr) repeat(auto-fit, minmax(50px, 1fr)); gap: 16px; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+.skel-row:last-child { border-bottom: 0; }
+.skel-head { background: var(--surface-2); padding: 11px 16px; }
+@media (max-width: 680px) { .skel-row > :nth-child(n + 4) { display: none; } .skel-row { grid-template-columns: 1fr auto auto; } }

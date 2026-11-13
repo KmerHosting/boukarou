@@ -5,7 +5,7 @@ import { t } from "../lib/i18n";
 import { ago, memory } from "../lib/format";
 import { useSession } from "../lib/session";
 import type { Instance } from "../lib/types";
-import { Button, ConfirmModal, ErrorState, Loading, OsTile, SecretModal, StatusBadge, useApi, useToast } from "../components/ui";
+import { Button, ConfirmModal, ErrorState, OsTile, SecretModal, StatusBadge, useApi, useToast } from "../components/ui";
 import { OverviewTab } from "./container/Overview";
 import { ConsoleTab } from "./container/Console";
 import { SnapshotsTab } from "./container/Snapshots";
@@ -14,6 +14,7 @@ import { ResizeTab } from "./container/Resize";
 import { SettingsTab } from "./container/Settings";
 import { ActivityTab } from "./container/Activity";
 import { ActivityIcon, ConsoleIcon, DomainIcon, FreezeIcon, OverviewIcon, ReinstallIcon, ResizeIcon, RestartIcon, RetryIcon, SettingsIcon, SnapshotIcon, StartIcon, StopIcon, SunIcon, TrashIcon } from "../components/icons";
+import { DetailPageSkeleton } from "../components/Skeleton";
 
 export type Detail = {
   instance: Instance;
@@ -63,7 +64,7 @@ export function ContainerPage() {
     if (inst?.status === "reinstalling") asked.current = false;
   }, [inst?.status]);
 
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <DetailPageSkeleton />;
   if (!data || !inst) return <ErrorState error={error} retry={reload} />;
 
   async function action(name: string) {
@@ -103,7 +104,7 @@ export function ContainerPage() {
           <div className="meta">
             <StatusBadge status={status} busy={inst.busy} />
             <span>{inst.image.name} {inst.image.version}</span>
-            <span className="mono">{inst.cpu} vCPU · {memory(inst.memoryMb)} · {inst.diskGb} GB</span>
+            <span className="mono">{inst.cpu} vCPU | {memory(inst.memoryMb)} | {inst.diskGb} GB</span>
             {inst.owner && !mine && <span>{t("Owner")}: <Link to={`/admin/users/${inst.owner.id}`} className="mono">{inst.owner.username}</Link></span>}
             {inst.trafficBlocked && <span className="tag tag-bad">{t("Traffic limited")}</span>}
           </div>

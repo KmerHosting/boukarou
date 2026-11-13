@@ -1,7 +1,7 @@
 import { getLang } from "./i18n";
 
 export function bytes(n: number | null | undefined, digits = 1) {
-  if (n == null || !isFinite(n)) return "—";
+  if (n == null || !isFinite(n)) return "-";
   const u = ["B", "KB", "MB", "GB", "TB"];
   let i = 0;
   let v = n;
@@ -21,7 +21,7 @@ export function memory(mb: number) {
 const locale = () => (getLang() === "fr" ? "fr-FR" : "en-GB");
 
 export function date(ms: number | null | undefined) {
-  if (!ms) return "—";
+  if (!ms) return "-";
   return new Date(ms).toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short" });
 }
 export function shortTime(ms: number) {
@@ -32,7 +32,7 @@ export function shortDate(ms: number) {
 }
 
 export function ago(ms: number | null | undefined) {
-  if (!ms) return "—";
+  if (!ms) return "-";
   const s = Math.round((Date.now() - ms) / 1000);
   const rtf = new Intl.RelativeTimeFormat(getLang(), { numeric: "auto" });
   if (s < 60) return rtf.format(-s, "second");

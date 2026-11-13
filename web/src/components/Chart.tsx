@@ -64,7 +64,7 @@ export function LineChart({
       </svg>
       {hover != null && (
         <div className="chart-tip" style={{ left: `${(x(times[hover]) / W) * 100}%` }}>
-          {label(times[hover])} · {series.map((s) => format(s.values[hover])).join(" / ")}
+          {label(times[hover])} | {series.map((s) => format(s.values[hover])).join(" / ")}
         </div>
       )}
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }} className="axis-row">

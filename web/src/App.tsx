@@ -4,7 +4,7 @@ import { api, onAuthError } from "./lib/api";
 import { SessionCtx } from "./lib/session";
 import { useLang } from "./lib/i18n";
 import type { User } from "./lib/types";
-import { Loading } from "./components/ui";
+import { AppSkeleton } from "./components/Skeleton";
 import { Shell } from "./components/Shell";
 import { Login } from "./pages/Login";
 import { ForcePassword } from "./pages/ForcePassword";
@@ -46,7 +46,7 @@ export function App() {
     [refresh],
   );
 
-  if (!ready) return <Loading />;
+  if (!ready) return <AppSkeleton />;
 
   const session = { user, version, refresh, setUser };
   const next = encodeURIComponent(location.pathname + location.search);

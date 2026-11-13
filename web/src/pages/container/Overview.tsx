@@ -6,6 +6,7 @@ import { LineChart } from "../../components/Chart";
 import { sshLine } from "../Containers";
 import type { Detail } from "../Container";
 import { ActivityIcon, ChartIcon, DomainIcon, KeyIcon } from "../../components/icons";
+import { ChartsSkeleton } from "../../components/Skeleton";
 
 type Point = { at: number; cpu: number; memUsed: number; memTotal: number; diskUsed: number; rx: number; tx: number; processes: number };
 const RANGES: [string, number][] = [["1h", 3600e3], ["6h", 6 * 3600e3], ["24h", 24 * 3600e3], ["7d", 7 * 24 * 3600e3]];
@@ -35,9 +36,9 @@ export function OverviewTab({ d }: { d: Detail }) {
             )}
             <dl className="kv" style={{ marginTop: 16 }}>
               <dt>{t("User")}</dt><dd className="mono">root</dd>
-              <dt>{t("SSH port")}</dt><dd className="mono">{inst.sshPort ?? "—"}</dd>
-              <dt>{t("Private IPv4")}</dt><dd className="mono">{d.live?.ipv4 || inst.ipv4 || "—"}</dd>
-              <dt>{t("IPv6")}</dt><dd className="mono">{d.live?.ipv6 || inst.ipv6 || "—"}</dd>
+              <dt>{t("SSH port")}</dt><dd className="mono">{inst.sshPort ?? "-"}</dd>
+              <dt>{t("Private IPv4")}</dt><dd className="mono">{d.live?.ipv4 || inst.ipv4 || "-"}</dd>
+              <dt>{t("IPv6")}</dt><dd className="mono">{d.live?.ipv6 || inst.ipv6 || "-"}</dd>
               <dt>{t("Sign-in")}</dt><dd>{inst.hasSshKey ? t("Password or SSH key") : t("Password")}</dd>
             </dl>
             {!inst.sshHost && <p className="hint" style={{ marginTop: 12 }}>{t("The administrator has not set the server's public address, so the command uses this page's address.")}</p>}
@@ -48,11 +49,11 @@ export function OverviewTab({ d }: { d: Detail }) {
           <div className="card-head"><h2 className="h-icon"><ActivityIcon size={18} />{t("Now")}</h2></div>
           <div className="card-body">
             <dl className="kv">
-              <dt>{t("CPU")}</dt><dd className="mono">{last ? `${last.cpu}%` : "—"} <span className="faint">{t("of {n} vCPU", { n: inst.cpu })}</span></dd>
-              <dt>{t("Memory")}</dt><dd className="mono">{d.live ? bytes(d.live.memUsed) : "—"} <span className="faint">/ {memory(inst.memoryMb)}</span></dd>
-              <dt>{t("Disk used")}</dt><dd className="mono">{last ? bytes(last.diskUsed) : "—"} <span className="faint">/ {inst.diskGb} GB</span></dd>
-              <dt>{t("Processes")}</dt><dd className="mono">{d.live?.processes ?? "—"}</dd>
-              <dt>{t("Network")}</dt><dd className="mono">↓ {last ? rate(last.rx) : "—"} · ↑ {last ? rate(last.tx) : "—"}</dd>
+              <dt>{t("CPU")}</dt><dd className="mono">{last ? `${last.cpu}%` : "-"} <span className="faint">{t("of {n} vCPU", { n: inst.cpu })}</span></dd>
+              <dt>{t("Memory")}</dt><dd className="mono">{d.live ? bytes(d.live.memUsed) : "-"} <span className="faint">/ {memory(inst.memoryMb)}</span></dd>
+              <dt>{t("Disk used")}</dt><dd className="mono">{last ? bytes(last.diskUsed) : "-"} <span className="faint">/ {inst.diskGb} GB</span></dd>
+              <dt>{t("Processes")}</dt><dd className="mono">{d.live?.processes ?? "-"}</dd>
+              <dt>{t("Network")}</dt><dd className="mono">↓ {last ? rate(last.rx) : "-"} | ↑ {last ? rate(last.tx) : "-"}</dd>
             </dl>
           </div>
         </section>
@@ -69,8 +70,8 @@ export function OverviewTab({ d }: { d: Detail }) {
         <div className="card-body">
           {quotaBytes != null && <Meter value={used} max={quotaBytes} />}
           <p className="hint" style={{ marginTop: quotaBytes != null ? 10 : 0 }}>
-            ↓ {bytes(d.traffic.rx)} {t("received")} · ↑ {bytes(d.traffic.tx)} {t("sent")}
-            {inst.trafficBlocked && <> · <span style={{ color: "var(--bad)" }}>{t("Quota reached: network is limited until next month.")}</span></>}
+            ↓ {bytes(d.traffic.rx)} {t("received")} | ↑ {bytes(d.traffic.tx)} {t("sent")}
+            {inst.trafficBlocked && <> | <span style={{ color: "var(--bad)" }}>{t("Quota reached: network is limited until next month.")}</span></>}
           </p>
         </div>
       </section>
@@ -85,7 +86,9 @@ export function OverviewTab({ d }: { d: Detail }) {
           </div>
         </div>
         <div className="card-body">
-          {points.length < 2 ? (
+          {metrics.loading && !metrics.data ? (
+            <ChartsSkeleton />
+          ) : points.length < 2 ? (
             <p className="muted">{t("Metrics appear a couple of minutes after the container starts. They are sampled every minute.")}</p>
           ) : (
             <div className="grid grid-2" style={{ gap: 28 }}>

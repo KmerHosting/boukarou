@@ -2,9 +2,10 @@ import { Link, useNavigate } from "react-router";
 import { t } from "../lib/i18n";
 import { memory } from "../lib/format";
 import type { Instance, Limits, Usage } from "../lib/types";
-import { ErrorState, Loading, Logo, OsTile, StatusBadge, useApi } from "../components/ui";
+import { ErrorState, Logo, OsTile, StatusBadge, useApi } from "../components/ui";
 import { QuotaStrip } from "../components/Quota";
 import { PlusIcon } from "../components/icons";
+import { ListPageSkeleton } from "../components/Skeleton";
 
 type Overview = { instances: Instance[]; usage: Usage; limits: Limits };
 
@@ -50,8 +51,8 @@ export function InstanceTable({ items, showOwner }: { items: Instance[]; showOwn
                 <StatusBadge status={i.status} busy={i.busy} />
                 {i.trafficBlocked && <span className="tag tag-bad" style={{ marginLeft: 8 }}>{t("Traffic limited")}</span>}
               </td>
-              <td className="mono hide-sm">{i.ipv4 || <span className="faint">—</span>}</td>
-              <td className="mono hide-sm">{i.sshPort ? `:${i.sshPort}` : <span className="faint">—</span>}</td>
+              <td className="mono hide-sm">{i.ipv4 || <span className="faint">-</span>}</td>
+              <td className="mono hide-sm">{i.sshPort ? `:${i.sshPort}` : <span className="faint">-</span>}</td>
               <td className="num mono">{i.cpu}</td>
               <td className="num mono nowrap">{memory(i.memoryMb)}</td>
               <td className="num mono nowrap hide-sm">{i.diskGb} GB</td>
@@ -67,7 +68,7 @@ export function Containers() {
   const { data, error, loading, reload } = useApi<Overview>("/api/overview", {
     poll: (d) => (d?.instances.some(transitional) ? 3000 : 15000),
   });
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <ListPageSkeleton />;
   if (!data) return <ErrorState error={error} retry={reload} />;
   const full = data.limits.max_instances != null && data.usage.instances >= data.limits.max_instances;
 

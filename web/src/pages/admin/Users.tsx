@@ -4,9 +4,10 @@ import { post } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { ago, memory } from "../../lib/format";
 import type { AdminUser, Limits } from "../../lib/types";
-import { Button, ErrorState, Field, Loading, Modal, SecretModal, useApi } from "../../components/ui";
+import { Button, ErrorState, Field, Modal, SecretModal, useApi } from "../../components/ui";
 import { LimitsEditor, fromDraft, toDraft, type LimitDraft } from "../../components/LimitsEditor";
 import { UserPlusIcon } from "../../components/icons";
+import { Skel, TablePageSkeleton } from "../../components/Skeleton";
 
 const usageCell = (used: number, max: number | null, fmt: (n: number) => string = String) => (
   <span className="mono nowrap">{fmt(used)} <span className="faint">/ {max == null ? "∞" : fmt(max)}</span></span>
@@ -17,7 +18,7 @@ export function AdminUsers() {
   const { data, error, loading, reload } = useApi<{ users: AdminUser[] }>("/api/admin/users");
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState<{ username: string; password: string } | null>(null);
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <TablePageSkeleton cols={6} />;
   if (!data) return <ErrorState error={error} retry={reload} />;
 
   return (
@@ -138,7 +139,7 @@ function CreateUser({ onClose, onCreated }: { onClose: () => void; onCreated: (u
         </Field>
       </div>
       <h3 style={{ margin: "20px 0 12px" }}>{t("Limits")}</h3>
-      {draft ? <LimitsEditor value={draft} onChange={setLimits} /> : <Loading />}
+      {draft ? <LimitsEditor value={draft} onChange={setLimits} /> : <div style={{ display: "grid", gap: 12 }}><Skel h={36} r={6} /><Skel h={36} r={6} /><Skel h={36} r={6} /></div>}
       {error && <p className="form-error">{error}</p>}
     </Modal>
   );

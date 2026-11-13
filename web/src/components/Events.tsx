@@ -46,11 +46,11 @@ export function EventRow({ e, showUser }: { e: EventItem; showUser?: boolean }) 
       <div>
         <div>
           {t(LABELS[e.action] || e.action)}
-          {e.message && <span className="muted"> · {e.message}</span>}
+          {e.message && <span className="muted"> | {e.message}</span>}
         </div>
         <div className="a">
           {e.actor ? t("by {u}", { u: e.actor }) : t("system")}
-          {showUser && e.user && e.user !== e.actor ? ` · ${t("account {u}", { u: e.user })}` : ""}
+          {showUser && e.user && e.user !== e.actor ? ` | ${t("account {u}", { u: e.user })}` : ""}
         </div>
       </div>
     </div>

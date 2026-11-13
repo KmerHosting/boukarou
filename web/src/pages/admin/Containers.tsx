@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { t } from "../../lib/i18n";
 import type { Instance } from "../../lib/types";
-import { ErrorState, Loading, useApi } from "../../components/ui";
+import { ErrorState, useApi } from "../../components/ui";
 import { InstanceTable } from "../Containers";
 import { SearchIcon } from "../../components/icons";
+import { TablePageSkeleton } from "../../components/Skeleton";
 
 export function AdminContainers() {
   const { data, error, loading, reload } = useApi<{ instances: Instance[] }>("/api/admin/instances", {
     poll: (d) => (d?.instances.some((i) => ["creating", "reinstalling", "deleting"].includes(i.status)) ? 3000 : 15000),
   });
   const [q, setQ] = useState("");
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <TablePageSkeleton cols={8} icon />;
   if (!data) return <ErrorState error={error} retry={reload} />;
   const needle = q.trim().toLowerCase();
   const items = needle

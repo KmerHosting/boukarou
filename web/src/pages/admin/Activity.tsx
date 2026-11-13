@@ -2,16 +2,17 @@ import { useState } from "react";
 import { api } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import type { EventItem } from "../../lib/types";
-import { Button, ErrorState, Loading, useApi } from "../../components/ui";
+import { Button, ErrorState, useApi } from "../../components/ui";
 import { EventRow } from "../../components/Events";
 import { RestoreIcon } from "../../components/icons";
+import { RowsPageSkeleton } from "../../components/Skeleton";
 
 export function AdminActivity() {
   const { data, error, loading, reload } = useApi<{ events: EventItem[] }>("/api/admin/events");
   const [more, setMore] = useState<EventItem[]>([]);
   const [end, setEnd] = useState(false);
   const [busy, setBusy] = useState(false);
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <RowsPageSkeleton />;
   if (!data) return <ErrorState error={error} retry={reload} />;
   const events = [...data.events, ...more];
   return (

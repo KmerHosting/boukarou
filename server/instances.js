@@ -387,7 +387,7 @@ export async function resize(row, owner, { cpu, memoryMb, diskGb }, actor) {
     update(row.id, values);
     logEvent({
       userId: row.user_id, actorId: actor.id, instanceId: row.id, action: "instance.resize",
-      message: `${values.cpu} vCPU · ${values.memory_mb} MB · ${values.disk_gb} GB`,
+      message: `${values.cpu} vCPU | ${values.memory_mb} MB | ${values.disk_gb} GB`,
     });
   } finally {
     unlock();

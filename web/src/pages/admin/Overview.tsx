@@ -2,9 +2,10 @@ import { Link } from "react-router";
 import { t } from "../../lib/i18n";
 import { bytes, duration, memory } from "../../lib/format";
 import type { EventItem } from "../../lib/types";
-import { ErrorState, Loading, Meter, useApi } from "../../components/ui";
+import { ErrorState, Meter, useApi } from "../../components/ui";
 import { EventRow } from "../../components/Events";
 import { ActivityIcon, ContainerIcon, CpuIcon, DiskIcon, MemoryIcon, NextIcon, SettingsIcon, UserPlusIcon } from "../../components/icons";
+import { StatsPageSkeleton } from "../../components/Skeleton";
 
 type Data = {
   host: { hostname: string; cpus: number; load: number[]; memTotal: number; memFree: number; uptime: number; platform: string };
@@ -21,7 +22,7 @@ type Data = {
 
 export function AdminOverview() {
   const { data, error, loading, reload } = useApi<Data>("/api/admin/overview", { poll: 20000 });
-  if (loading && !data) return <Loading />;
+  if (loading && !data) return <StatsPageSkeleton />;
   if (!data) return <ErrorState error={error} retry={reload} />;
   const { host, counts, runtime, pool } = data;
   const memUsed = host.memTotal - host.memFree;
@@ -37,7 +38,7 @@ export function AdminOverview() {
       <div className="page-head">
         <div>
           <h1>{t("Overview")}</h1>
-          <p><span className="mono">{host.hostname}</span> · {host.platform} · {t("up {d}", { d: duration(host.uptime) })}</p>
+          <p><span className="mono">{host.hostname}</span> | {host.platform} | {t("up {d}", { d: duration(host.uptime) })}</p>
         </div>
         <Link to="/admin/users" className="btn btn-primary"><UserPlusIcon size={16} />{t("New user")}</Link>
       </div>
@@ -47,24 +48,24 @@ export function AdminOverview() {
           <div className="card stat">
             <div className="k"><ContainerIcon size={16} />{t("Containers")}</div>
             <div className="v">{counts.total}</div>
-            <div className="s">{t("{r} running · {s} stopped", { r: counts.running || 0, s: counts.stopped || 0 })}{counts.failed ? ` · ${t("{f} failed", { f: counts.failed })}` : ""}</div>
+            <div className="s">{t("{r} running | {s} stopped", { r: counts.running || 0, s: counts.stopped || 0 })}{counts.failed ? ` | ${t("{f} failed", { f: counts.failed })}` : ""}</div>
           </div>
           <div className="card stat">
             <div className="k"><CpuIcon size={16} />{t("CPU")}</div>
             <div className="v">{host.load[0].toFixed(2)}</div>
-            <div className="s">{t("load on {n} cores · {a} vCPU allocated", { n: host.cpus, a: counts.cpu })}</div>
+            <div className="s">{t("load on {n} cores | {a} vCPU allocated", { n: host.cpus, a: counts.cpu })}</div>
             <Meter value={host.load[0]} max={host.cpus} />
           </div>
           <div className="card stat">
             <div className="k"><MemoryIcon size={16} />{t("Memory")}</div>
             <div className="v">{bytes(memUsed)}</div>
-            <div className="s">{t("of {t} · {a} allocated", { t: bytes(host.memTotal), a: memory(counts.memory_mb) })}</div>
+            <div className="s">{t("of {t} | {a} allocated", { t: bytes(host.memTotal), a: memory(counts.memory_mb) })}</div>
             <Meter value={memUsed} max={host.memTotal} />
           </div>
           <div className="card stat">
             <div className="k"><DiskIcon size={16} />{t("Storage pool")}</div>
-            <div className="v">{pool ? bytes(pool.used) : "—"}</div>
-            <div className="s">{pool ? t("of {t} · {a} GB allocated", { t: bytes(pool.total), a: counts.disk_gb }) : t("unknown")}</div>
+            <div className="v">{pool ? bytes(pool.used) : "-"}</div>
+            <div className="s">{pool ? t("of {t} | {a} GB allocated", { t: bytes(pool.total), a: counts.disk_gb }) : t("unknown")}</div>
             {pool && <Meter value={pool.used} max={pool.total} />}
           </div>
         </div>
@@ -75,12 +76,12 @@ export function AdminOverview() {
             <div className="card-body">
               <dl className="kv">
                 <dt>{t("Engine")}</dt><dd>{runtime.ok ? `${runtime.server} ${runtime.version}` : <span style={{ color: "var(--bad)" }}>{t("unavailable")}</span>}</dd>
-                <dt>{t("Storage driver")}</dt><dd className="mono">{runtime.storageDriver || "—"}</dd>
+                <dt>{t("Storage driver")}</dt><dd className="mono">{runtime.storageDriver || "-"}</dd>
                 <dt>{t("LXD project")}</dt><dd className="mono">{data.project}</dd>
                 <dt>{t("Bridge")}</dt><dd className="mono">{data.network}</dd>
-                <dt>{t("Public address")}</dt><dd className="mono">{data.settings.publicHost || "—"}</dd>
+                <dt>{t("Public address")}</dt><dd className="mono">{data.settings.publicHost || "-"}</dd>
                 <dt>{t("Users")}</dt><dd>{counts.users}</dd>
-                <dt>{t("Traffic this month")}</dt><dd className="mono">↓ {bytes(data.traffic.rx)} · ↑ {bytes(data.traffic.tx)}</dd>
+                <dt>{t("Traffic this month")}</dt><dd className="mono">↓ {bytes(data.traffic.rx)} | ↑ {bytes(data.traffic.tx)}</dd>
                 <dt>{t("Version")}</dt><dd className="mono">Boukarou {data.version}</dd>
               </dl>
             </div>

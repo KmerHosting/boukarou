@@ -4,6 +4,7 @@ import { t } from "../../lib/i18n";
 import type { EventItem } from "../../lib/types";
 import { Button, ErrorState, Loading, useApi } from "../../components/ui";
 import { EventRow } from "../../components/Events";
+import { RestoreIcon } from "../../components/icons";
 
 export function AdminActivity() {
   const { data, error, loading, reload } = useApi<{ events: EventItem[] }>("/api/admin/events");
@@ -24,7 +25,7 @@ export function AdminActivity() {
       <section className="card">{events.length ? events.map((e) => <EventRow key={e.id} e={e} showUser />) : <div className="card-body muted">{t("Nothing yet.")}</div>}</section>
       {events.length >= 100 && !end && (
         <div style={{ marginTop: 14, textAlign: "center" }}>
-          <Button loading={busy} onClick={async () => {
+          <Button icon={<RestoreIcon size={16} />} loading={busy} onClick={async () => {
             setBusy(true);
             const r = await api<{ events: EventItem[] }>(`/api/admin/events?before=${events[events.length - 1].id}`);
             setMore((m) => [...m, ...r.events]);

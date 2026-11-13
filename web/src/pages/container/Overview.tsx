@@ -5,6 +5,7 @@ import { CopyButton, Meter, useApi } from "../../components/ui";
 import { LineChart } from "../../components/Chart";
 import { sshLine } from "../Containers";
 import type { Detail } from "../Container";
+import { ActivityIcon, ChartIcon, DomainIcon, KeyIcon } from "../../components/icons";
 
 type Point = { at: number; cpu: number; memUsed: number; memTotal: number; diskUsed: number; rx: number; tx: number; processes: number };
 const RANGES: [string, number][] = [["1h", 3600e3], ["6h", 6 * 3600e3], ["24h", 24 * 3600e3], ["7d", 7 * 24 * 3600e3]];
@@ -25,7 +26,7 @@ export function OverviewTab({ d }: { d: Detail }) {
     <div className="stack">
       <div className="grid grid-2">
         <section className="card">
-          <div className="card-head"><h2>{t("Connect")}</h2></div>
+          <div className="card-head"><h2 className="h-icon"><KeyIcon size={18} />{t("Connect")}</h2></div>
           <div className="card-body">
             {ssh ? (
               <div className="copy-line"><span>{ssh}</span><CopyButton text={ssh} /></div>
@@ -44,7 +45,7 @@ export function OverviewTab({ d }: { d: Detail }) {
         </section>
 
         <section className="card">
-          <div className="card-head"><h2>{t("Now")}</h2></div>
+          <div className="card-head"><h2 className="h-icon"><ActivityIcon size={18} />{t("Now")}</h2></div>
           <div className="card-body">
             <dl className="kv">
               <dt>{t("CPU")}</dt><dd className="mono">{last ? `${last.cpu}%` : "—"} <span className="faint">{t("of {n} vCPU", { n: inst.cpu })}</span></dd>
@@ -60,7 +61,7 @@ export function OverviewTab({ d }: { d: Detail }) {
       <section className="card">
         <div className="card-head">
           <div>
-            <h2>{t("Traffic this month")}</h2>
+            <h2 className="h-icon"><DomainIcon size={18} />{t("Traffic this month")}</h2>
             <p>{t("Counted in and out. Resets on the 1st (UTC).")}</p>
           </div>
           <span className="mono">{bytes(used)} <span className="faint">/ {quotaBytes == null ? t("unlimited") : bytes(quotaBytes)}</span></span>
@@ -76,7 +77,7 @@ export function OverviewTab({ d }: { d: Detail }) {
 
       <section className="card">
         <div className="card-head">
-          <h2>{t("Usage")}</h2>
+          <h2 className="h-icon"><ChartIcon size={18} />{t("Usage")}</h2>
           <div className="seg" role="group" aria-label={t("Time range")}>
             {RANGES.map(([k]) => (
               <button key={k} className={range === k ? "on" : ""} onClick={() => setRange(k)}>{k}</button>

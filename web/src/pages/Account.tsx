@@ -6,6 +6,7 @@ import { setTheme, useTheme } from "../lib/theme";
 import { useSession } from "../lib/session";
 import { date } from "../lib/format";
 import { Button, Field, Modal, useToast } from "../components/ui";
+import { PasswordIcon, SaveIcon, ShieldCheckIcon, ShieldSlashIcon, SignOutIcon, TranslateIcon } from "../components/icons";
 
 export function Account() {
   const { user, refresh } = useSession();
@@ -29,7 +30,7 @@ export function Account() {
           <section className="card">
             <div className="card-head">
               <div>
-                <h2>{t("Password")}</h2>
+                <h2 className="h-icon"><PasswordIcon size={18} />{t("Password")}</h2>
                 <p>{t("For safety, the administrator password can only be changed on the server.")}</p>
               </div>
             </div>
@@ -47,10 +48,10 @@ export function Account() {
         <section className="card">
           <div className="card-head">
             <div>
-              <h2>{t("Sessions")}</h2>
+              <h2 className="h-icon"><SignOutIcon size={18} />{t("Sessions")}</h2>
               <p>{t("Sign out every other browser where your account is signed in.")}</p>
             </div>
-            <Button onClick={async () => {
+            <Button icon={<SignOutIcon size={16} />} onClick={async () => {
               await post("/api/account/sessions/revoke");
               toast(t("Other sessions signed out"));
             }}>{t("Sign out others")}</Button>
@@ -58,7 +59,7 @@ export function Account() {
         </section>
 
         <section className="card">
-          <div className="card-head"><h2>{t("Preferences")}</h2></div>
+          <div className="card-head"><h2 className="h-icon"><TranslateIcon size={18} />{t("Preferences")}</h2></div>
           <div className="card-body grid grid-2">
             <Field label={t("Language")} htmlFor="lang">
               <select id="lang" className="select" value={getLang()} onChange={(e) => setLang(e.target.value as "en" | "fr")}>
@@ -108,7 +109,7 @@ function PasswordCard() {
 
   return (
     <section className="card">
-      <div className="card-head"><h2>{t("Password")}</h2></div>
+      <div className="card-head"><h2 className="h-icon"><PasswordIcon size={18} />{t("Password")}</h2></div>
       <form className="card-body" onSubmit={submit}>
         <div className="grid grid-3">
           <Field label={t("Current password")} htmlFor="pw-cur">
@@ -124,7 +125,7 @@ function PasswordCard() {
         <p className="hint" style={{ marginTop: 8 }}>{t("At least 10 characters.")}</p>
         {error && <p className="form-error">{error}</p>}
         <div style={{ marginTop: 14 }}>
-          <Button type="submit" variant="primary" loading={busy} disabled={!current || password.length < 10}>{t("Change password")}</Button>
+          <Button type="submit" variant="primary" icon={<SaveIcon size={16} />} loading={busy} disabled={!current || password.length < 10}>{t("Change password")}</Button>
         </div>
       </form>
     </section>
@@ -158,15 +159,16 @@ function TwoFactorCard({ enabled, onChange }: { enabled: boolean; onChange: () =
     <section className="card">
       <div className="card-head">
         <div>
-          <h2>
+          <h2 className="h-icon">
+            <ShieldCheckIcon size={18} />
             {t("Two-factor sign-in")} {enabled ? <span className="tag tag-ok">{t("On")}</span> : <span className="tag">{t("Off")}</span>}
           </h2>
           <p>{t("Ask for a code from an authenticator app (Aegis, Google Authenticator, 1Password…) after your password.")}</p>
         </div>
         {enabled ? (
-          <Button variant="danger" onClick={() => { setDisable(true); setCode(""); setPassword(""); setError(""); }}>{t("Turn off")}</Button>
+          <Button variant="danger" icon={<ShieldSlashIcon size={16} />} onClick={() => { setDisable(true); setCode(""); setPassword(""); setError(""); }}>{t("Turn off")}</Button>
         ) : (
-          <Button loading={busy} onClick={start}>{t("Turn on")}</Button>
+          <Button icon={<ShieldCheckIcon size={16} />} loading={busy} onClick={start}>{t("Turn on")}</Button>
         )}
       </div>
 

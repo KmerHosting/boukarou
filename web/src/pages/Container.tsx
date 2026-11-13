@@ -13,6 +13,7 @@ import { DomainsTab } from "./container/Domains";
 import { ResizeTab } from "./container/Resize";
 import { SettingsTab } from "./container/Settings";
 import { ActivityTab } from "./container/Activity";
+import { ActivityIcon, ConsoleIcon, DomainIcon, FreezeIcon, OverviewIcon, ReinstallIcon, ResizeIcon, RestartIcon, RetryIcon, SettingsIcon, SnapshotIcon, StartIcon, StopIcon, SunIcon, TrashIcon } from "../components/icons";
 
 export type Detail = {
   instance: Instance;
@@ -81,14 +82,14 @@ export function ContainerPage() {
   const busy = transitional(inst) || !!pending;
   const ready = !["creating", "deleting"].includes(status);
   const tabs = [
-    ["overview", t("Overview")],
-    ["console", t("Console")],
-    ["snapshots", t("Snapshots")],
-    ["domains", t("Domains")],
-    ["resize", t("Resize")],
-    ["settings", t("Settings")],
-    ["activity", t("Activity")],
-  ];
+    ["overview", t("Overview"), <OverviewIcon key="i" size={16} />],
+    ["console", t("Console"), <ConsoleIcon key="i" size={16} />],
+    ["snapshots", t("Snapshots"), <SnapshotIcon key="i" size={16} />],
+    ["domains", t("Domains"), <DomainIcon key="i" size={16} />],
+    ["resize", t("Resize"), <ResizeIcon key="i" size={16} />],
+    ["settings", t("Settings"), <SettingsIcon key="i" size={16} />],
+    ["activity", t("Activity"), <ActivityIcon key="i" size={16} />],
+  ] as const;
 
   return (
     <>
@@ -109,17 +110,17 @@ export function ContainerPage() {
         </div>
         {ready && status !== "failed" && (
           <div className="actions btn-group">
-            {status === "stopped" && <Button variant="primary" loading={pending === "start"} disabled={busy} onClick={() => action("start")}>{t("Start")}</Button>}
-            {status === "frozen" && <Button variant="primary" loading={pending === "unfreeze"} disabled={busy} onClick={() => action("unfreeze")}>{t("Unfreeze")}</Button>}
+            {status === "stopped" && <Button variant="primary" icon={<StartIcon size={16} weight="fill" />} loading={pending === "start"} disabled={busy} onClick={() => action("start")}>{t("Start")}</Button>}
+            {status === "frozen" && <Button variant="primary" icon={<SunIcon size={16} />} loading={pending === "unfreeze"} disabled={busy} onClick={() => action("unfreeze")}>{t("Unfreeze")}</Button>}
             {status === "running" && (
               <>
-                <Button onClick={() => navigate(`/c/${inst.id}/console`)}>{t("Console")}</Button>
-                <Button loading={pending === "restart"} disabled={busy} onClick={() => action("restart")}>{t("Restart")}</Button>
-                <Button loading={pending === "freeze"} disabled={busy} onClick={() => action("freeze")} title={t("Pause every process without shutting down")}>{t("Freeze")}</Button>
+                <Button icon={<ConsoleIcon size={16} />} onClick={() => navigate(`/c/${inst.id}/console`)}>{t("Console")}</Button>
+                <Button icon={<RestartIcon size={16} />} loading={pending === "restart"} disabled={busy} onClick={() => action("restart")}>{t("Restart")}</Button>
+                <Button icon={<FreezeIcon size={16} />} loading={pending === "freeze"} disabled={busy} onClick={() => action("freeze")} title={t("Pause every process without shutting down")}>{t("Freeze")}</Button>
               </>
             )}
             {(status === "running" || status === "frozen") && (
-              <Button loading={pending === "stop"} disabled={busy} onClick={() => action("stop")}>{t("Stop")}</Button>
+              <Button icon={<StopIcon size={16} weight="fill" />} loading={pending === "stop"} disabled={busy} onClick={() => action("stop")}>{t("Stop")}</Button>
             )}
           </div>
         )}
@@ -132,7 +133,7 @@ export function ContainerPage() {
           <h2 style={{ marginBottom: 8 }}>{t("Something went wrong")}</h2>
           <div className="error-box mono" style={{ fontSize: 12.5, whiteSpace: "pre-wrap" }}>{inst.error || t("Unknown error")}</div>
           <div className="btn-group" style={{ marginTop: 14 }}>
-            <Button variant="primary" disabled={!!inst.busy} onClick={async () => {
+            <Button variant="primary" icon={<RetryIcon size={16} />} disabled={!!inst.busy} onClick={async () => {
               try {
                 await post(`/api/instances/${inst.id}/retry`);
                 reload();
@@ -140,8 +141,8 @@ export function ContainerPage() {
                 toast((e as Error).message, true);
               }
             }}>{t("Try again")}</Button>
-            <Button onClick={() => navigate(`/c/${inst.id}/settings`)}>{t("Reinstall")}</Button>
-            <Button variant="danger" onClick={() => setConfirmDelete(true)}>{t("Delete")}</Button>
+            <Button icon={<ReinstallIcon size={16} />} onClick={() => navigate(`/c/${inst.id}/settings`)}>{t("Reinstall")}</Button>
+            <Button variant="danger" icon={<TrashIcon size={16} />} onClick={() => setConfirmDelete(true)}>{t("Delete")}</Button>
           </div>
         </div>
       )}
@@ -151,8 +152,9 @@ export function ContainerPage() {
       {ready && status !== "creating" && (
         <>
           <nav className="tabs" aria-label={t("Container sections")}>
-            {tabs.map(([key, label]) => (
+            {tabs.map(([key, label, icon]) => (
               <NavLink key={key} to={key === "overview" ? `/c/${inst.id}` : `/c/${inst.id}/${key}`} end className={() => (tab === key ? "active" : "")}>
+                {icon}
                 {label}
               </NavLink>
             ))}
@@ -183,6 +185,7 @@ export function ContainerPage() {
           description={t("The container, its snapshots and its domains are removed for good.")}
           word={inst.name}
           action={t("Delete container")}
+          icon={<TrashIcon size={16} />}
           onClose={() => setConfirmDelete(false)}
           onConfirm={async () => {
             await del(`/api/instances/${inst.id}`, { confirm: inst.name });

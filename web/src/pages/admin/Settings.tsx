@@ -4,6 +4,7 @@ import { t } from "../../lib/i18n";
 import type { Image, Limits } from "../../lib/types";
 import { Button, ErrorState, Field, Loading, OsTile, useApi, useToast } from "../../components/ui";
 import { LimitsEditor, LIMIT_FIELDS, toDraft, type LimitDraft } from "../../components/LimitsEditor";
+import { DiskIcon, DomainIcon, SaveIcon, UsersIcon } from "../../components/icons";
 
 type Data = { settings: Record<string, string>; images: Image[] };
 
@@ -64,14 +65,14 @@ function Form({ data, reload }: { data: Data; reload: () => void }) {
           <h1>{t("Settings")}</h1>
           <p>{t("How this server is reached, and what new users get by default.")}</p>
         </div>
-        <Button variant="primary" loading={busy} onClick={save}>{t("Save settings")}</Button>
+        <Button variant="primary" icon={<SaveIcon size={16} />} loading={busy} onClick={save}>{t("Save settings")}</Button>
       </div>
       {error && <div className="error-box" style={{ marginBottom: 16 }}>{error}</div>}
       <div className="stack" style={{ maxWidth: 860 }}>
         <section className="card">
           <div className="card-head">
             <div>
-              <h2>{t("Network access")}</h2>
+              <h2 className="h-icon"><DomainIcon size={18} />{t("Network access")}</h2>
               <p>{t("Each container gets one host port forwarded to its SSH server.")}</p>
             </div>
           </div>
@@ -98,7 +99,7 @@ function Form({ data, reload }: { data: Data; reload: () => void }) {
         <section className="card">
           <div className="card-head">
             <div>
-              <h2>{t("Default limits for new users")}</h2>
+              <h2 className="h-icon"><UsersIcon size={18} />{t("Default limits for new users")}</h2>
               <p>{t("Applied when you create a user. You can change them per user afterwards.")}</p>
             </div>
           </div>
@@ -110,7 +111,7 @@ function Form({ data, reload }: { data: Data; reload: () => void }) {
         <section className="card">
           <div className="card-head">
             <div>
-              <h2>{t("Operating systems")}</h2>
+              <h2 className="h-icon"><DiskIcon size={18} />{t("Operating systems")}</h2>
               <p>{t("Uncheck the systems you don't want users to install.")}</p>
             </div>
             <span className="muted mono">{data.images.length - disabled.size} / {data.images.length}</span>

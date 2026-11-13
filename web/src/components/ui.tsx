@@ -3,40 +3,22 @@ import { createPortal } from "react-dom";
 import { ApiError, api } from "../lib/api";
 import { t } from "../lib/i18n";
 import type { Status } from "../lib/types";
+import { CheckIcon, CopyIcon, MinusIcon, PlusIcon, RetryIcon } from "./icons";
 
-// ---------- logo ----------
-export function Logo({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="var(--accent)" />
-      <path d="M16 6 6.5 15.5h2.5V25h14v-9.5h2.5z" fill="var(--surface)" />
-      <path d="M14 25v-5.2a2 2 0 0 1 4 0V25z" fill="var(--accent)" />
-    </svg>
-  );
-}
-
-export function HutIllustration() {
-  return (
-    <svg className="hut" width="64" height="56" viewBox="0 0 64 56" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
-      <path d="M32 4 6 26h52z" />
-      <path d="M12 26v24h40V26" />
-      <path d="M27 50V38a5 5 0 0 1 10 0v12" />
-      <path d="M2 50h60" strokeLinecap="round" />
-    </svg>
-  );
-}
+export { Logo } from "./Logo";
 
 // ---------- button ----------
 type BtnProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "danger" | "danger-solid" | "ghost" | "default";
   size?: "sm" | "md";
   loading?: boolean;
+  icon?: ReactNode;
 };
-export function Button({ variant = "default", size = "md", loading, children, className = "", disabled, ...rest }: BtnProps) {
+export function Button({ variant = "default", size = "md", loading, icon, children, className = "", disabled, ...rest }: BtnProps) {
   const cls = ["btn", variant !== "default" && `btn-${variant}`, size === "sm" && "btn-sm", className].filter(Boolean).join(" ");
   return (
     <button type="button" className={cls} disabled={disabled || loading} {...rest}>
-      {loading && <span className="spin" aria-hidden="true" />}
+      {loading ? <span className="spin" aria-hidden="true" /> : icon}
       {children}
     </button>
   );
@@ -109,7 +91,7 @@ export function Stepper({
   const clamp = (n: number) => Math.max(min, max != null ? Math.min(max, n) : n);
   return (
     <div className="stepper">
-      <button type="button" aria-label={t("Decrease {x}", { x: label })} disabled={value <= min} onClick={() => onChange(clamp(value - step))}>−</button>
+      <button type="button" aria-label={t("Decrease {x}", { x: label })} disabled={value <= min} onClick={() => onChange(clamp(value - step))}><MinusIcon size={14} /></button>
       <input
         aria-label={label}
         inputMode="numeric"
@@ -120,7 +102,7 @@ export function Stepper({
         }}
         onBlur={() => onChange(clamp(value))}
       />
-      <button type="button" aria-label={t("Increase {x}", { x: label })} disabled={max != null && value >= max} onClick={() => onChange(clamp(value + step))}>+</button>
+      <button type="button" aria-label={t("Increase {x}", { x: label })} disabled={max != null && value >= max} onClick={() => onChange(clamp(value + step))}><PlusIcon size={14} /></button>
     </div>
   );
 }
@@ -132,6 +114,7 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
     <Button
       size="sm"
       variant="ghost"
+      icon={done ? <CheckIcon size={15} /> : <CopyIcon size={15} />}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(text);
@@ -183,9 +166,9 @@ export function Modal({
 
 /** Danger confirmation that requires typing a word (usually the resource name). */
 export function ConfirmModal({
-  title, description, word, action, onConfirm, onClose, children,
+  title, description, word, action, onConfirm, onClose, children, icon,
 }: {
-  title: string; description: ReactNode; word?: string; action: string;
+  title: string; description: ReactNode; word?: string; action: string; icon?: ReactNode;
   onConfirm: () => Promise<unknown>; onClose: () => void; children?: ReactNode;
 }) {
   const [typed, setTyped] = useState("");
@@ -202,6 +185,7 @@ export function ConfirmModal({
           <Button onClick={onClose}>{t("Cancel")}</Button>
           <Button
             variant="danger-solid"
+            icon={icon}
             disabled={!ok}
             loading={busy}
             onClick={async () => {
@@ -237,7 +221,7 @@ export function ConfirmModal({
 
 export function SecretModal({ title, description, secret, onClose }: { title: string; description: ReactNode; secret: string; onClose: () => void }) {
   return (
-    <Modal title={title} description={description} onClose={onClose} footer={<Button variant="primary" onClick={onClose}>{t("I saved it")}</Button>}>
+    <Modal title={title} description={description} onClose={onClose} footer={<Button variant="primary" icon={<CheckIcon size={16} />} onClick={onClose}>{t("I saved it")}</Button>}>
       <div className="secret">
         <span>{secret}</span>
         <CopyButton text={secret} />
@@ -326,7 +310,7 @@ export function ErrorState({ error, retry }: { error: ApiError | null; retry?: (
       <div className="error-box">{error?.message || t("Something went wrong.")}</div>
       {retry && (
         <div style={{ marginTop: 12 }}>
-          <Button onClick={retry}>{t("Try again")}</Button>
+          <Button icon={<RetryIcon size={16} />} onClick={retry}>{t("Try again")}</Button>
         </div>
       )}
     </div>

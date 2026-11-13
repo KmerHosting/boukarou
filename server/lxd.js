@@ -120,6 +120,21 @@ export async function ensureFirewall() {
   await ufw(["route", "allow", "out", "on", n]);
 }
 
+/** Every IPv4 in use on our bridge, across all LXD projects (static leases and live addresses). */
+export async function addressesOnNetwork() {
+  const { stdout } = await run(["query", "/1.0/instances?recursion=2&all-projects=true"], { timeout: 30_000 });
+  const out = new Set();
+  for (const inst of JSON.parse(stdout)) {
+    for (const dev of Object.values(inst.expanded_devices || {})) {
+      if (dev.type === "nic" && dev.network === config.network && dev["ipv4.address"]) out.add(dev["ipv4.address"]);
+    }
+    const onBridge = Object.values(inst.expanded_devices || {}).some((d) => d.type === "nic" && d.network === config.network);
+    if (onBridge) for (const net of Object.values(inst.state?.network || {}))
+      for (const a of net.addresses || []) if (a.family === "inet" && a.scope === "global") out.add(a.address);
+  }
+  return [...out];
+}
+
 export async function networkInfo() {
   const { stdout } = await run(["query", `/1.0/networks/${encodeURIComponent(config.network)}`], { timeout: 10_000 });
   const n = JSON.parse(stdout);

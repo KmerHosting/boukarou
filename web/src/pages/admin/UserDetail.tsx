@@ -7,6 +7,7 @@ import type { AdminUser, Instance } from "../../lib/types";
 import { Button, ConfirmModal, ErrorState, Field, Loading, SecretModal, useApi, useToast } from "../../components/ui";
 import { LimitsEditor, fromDraft, toDraft, type LimitDraft } from "../../components/LimitsEditor";
 import { InstanceTable } from "../Containers";
+import { CpuIcon, DisableIcon, EnableIcon, PasswordIcon, SaveIcon, ShieldSlashIcon, TrashIcon } from "../../components/icons";
 
 export function AdminUser() {
   const { uid } = useParams();
@@ -57,9 +58,9 @@ export function AdminUser() {
         </div>
         {!isAdmin && (
           <div className="btn-group">
-            <Button onClick={() => act(async () => setPassword((await post<{ password: string }>(`/api/admin/users/${user.id}/reset-password`)).password), t("Password reset"))}>{t("Reset password")}</Button>
-            {user.totpEnabled && <Button onClick={() => act(() => post(`/api/admin/users/${user.id}/reset-2fa`), t("Two-factor sign-in removed"))}>{t("Reset 2FA")}</Button>}
-            <Button onClick={() => act(() => patch(`/api/admin/users/${user.id}`, { disabled: !user.disabled }), user.disabled ? t("Account enabled") : t("Account disabled"))}>
+            <Button icon={<PasswordIcon size={16} />} onClick={() => act(async () => setPassword((await post<{ password: string }>(`/api/admin/users/${user.id}/reset-password`)).password), t("Password reset"))}>{t("Reset password")}</Button>
+            {user.totpEnabled && <Button icon={<ShieldSlashIcon size={16} />} onClick={() => act(() => post(`/api/admin/users/${user.id}/reset-2fa`), t("Two-factor sign-in removed"))}>{t("Reset 2FA")}</Button>}
+            <Button icon={user.disabled ? <EnableIcon size={16} /> : <DisableIcon size={16} />} onClick={() => act(() => patch(`/api/admin/users/${user.id}`, { disabled: !user.disabled }), user.disabled ? t("Account enabled") : t("Account disabled"))}>
               {user.disabled ? t("Enable") : t("Disable")}
             </Button>
           </div>
@@ -73,7 +74,7 @@ export function AdminUser() {
           <section className="card">
             <div className="card-head">
               <div>
-                <h2>{t("Limits")}</h2>
+                <h2 className="h-icon"><CpuIcon size={18} />{t("Limits")}</h2>
                 <p>{t("Lowering a limit never touches existing containers; it only blocks new ones and growth.")}</p>
               </div>
             </div>
@@ -85,7 +86,7 @@ export function AdminUser() {
                 </Field>
               </div>
               <div style={{ marginTop: 16 }}>
-                <Button variant="primary" loading={saving} onClick={async () => {
+                <Button variant="primary" icon={<SaveIcon size={16} />} loading={saving} onClick={async () => {
                   setSaving(true);
                   await act(() => patch(`/api/admin/users/${user.id}`, { limits: fromDraft(limits!), note }), t("Saved"));
                   setSaving(false);
@@ -104,10 +105,10 @@ export function AdminUser() {
           <section className="card danger-zone">
             <div className="card-head">
               <div>
-                <h2>{t("Delete user")}</h2>
+                <h2 className="h-icon"><TrashIcon size={18} />{t("Delete user")}</h2>
                 <p>{t("Deletes the account and all of its containers, snapshots and domains.")}</p>
               </div>
-              <Button variant="danger" onClick={() => setConfirmDelete(true)}>{t("Delete…")}</Button>
+              <Button variant="danger" icon={<TrashIcon size={16} />} onClick={() => setConfirmDelete(true)}>{t("Delete…")}</Button>
             </div>
           </section>
         )}
@@ -127,6 +128,7 @@ export function AdminUser() {
           description={theirs.length ? t("This also deletes {n} container(s) for good.", { n: theirs.length }) : t("The account is removed for good.")}
           word={user.username}
           action={t("Delete user")}
+          icon={<TrashIcon size={16} />}
           onClose={() => setConfirmDelete(false)}
           onConfirm={async () => {
             await del(`/api/admin/users/${user.id}`, { confirm: user.username });

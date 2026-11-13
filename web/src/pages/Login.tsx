@@ -5,6 +5,7 @@ import { getLang, setLang, t } from "../lib/i18n";
 import { useSession } from "../lib/session";
 import type { User } from "../lib/types";
 import { Button, Field, Logo } from "../components/ui";
+import { BackIcon, ShieldCheckIcon, SignInIcon, TranslateIcon } from "../components/icons";
 
 export function Login() {
   const { setUser } = useSession();
@@ -48,7 +49,7 @@ export function Login() {
     <div className="auth">
       <div className="auth-box">
         <div className="brand">
-          <Logo size={28} />
+          <Logo size={46} />
           <span>Boukarou</span>
         </div>
         <form className="card auth-card" onSubmit={submit}>
@@ -73,11 +74,11 @@ export function Login() {
             </>
           )}
           {error && <p className="form-error">{error}</p>}
-          <Button type="submit" variant="primary" loading={busy} style={{ width: "100%", marginTop: 18, height: 38 }} disabled={ticket ? code.trim().length < 6 : !username || !password}>
+          <Button type="submit" variant="primary" icon={ticket ? <ShieldCheckIcon size={17} /> : <SignInIcon size={17} />} loading={busy} style={{ width: "100%", marginTop: 18, height: 38 }} disabled={ticket ? code.trim().length < 6 : !username || !password}>
             {ticket ? t("Verify") : t("Sign in")}
           </Button>
           {ticket && (
-            <Button variant="ghost" style={{ width: "100%", marginTop: 6 }} onClick={() => { setTicket(null); setCode(""); setError(""); }}>
+            <Button variant="ghost" icon={<BackIcon size={16} />} style={{ width: "100%", marginTop: 6 }} onClick={() => { setTicket(null); setCode(""); setError(""); }}>
               {t("Back")}
             </Button>
           )}
@@ -86,7 +87,7 @@ export function Login() {
           <span>{t("Forgot your password? Ask your administrator.")}</span>
         </div>
         <div className="auth-foot">
-          <button type="button" onClick={() => setLang(getLang() === "fr" ? "en" : "fr")}>{getLang() === "fr" ? "English" : "Français"}</button>
+          <button type="button" className="lang-btn" onClick={() => setLang(getLang() === "fr" ? "en" : "fr")}><TranslateIcon size={14} />{getLang() === "fr" ? "English" : "Français"}</button>
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.svg" width="120" alt="Boukarou"></p>
+
 # Boukarou
 
 **A free, self-hosted control panel for Linux containers.** Install it on your own server, create accounts for the people you trust, give each one the limits you want, and let them run their own containers: SSH access, a root console in the browser, snapshots, metrics and custom domains with HTTPS.
@@ -95,7 +97,7 @@ sudo boukarou uninstall                 # remove the panel (containers are kept)
 
 The administrator can also reset a user's password or two-factor sign-in from **Admin → Users**.
 
-![Admin user limits](docs/admin-user.png)
+![Admin overview](docs/admin-overview.png)
 
 ## How it works
 

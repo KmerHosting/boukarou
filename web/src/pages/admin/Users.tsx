@@ -6,6 +6,7 @@ import { ago, memory } from "../../lib/format";
 import type { AdminUser, Limits } from "../../lib/types";
 import { Button, ErrorState, Field, Loading, Modal, SecretModal, useApi } from "../../components/ui";
 import { LimitsEditor, fromDraft, toDraft, type LimitDraft } from "../../components/LimitsEditor";
+import { UserPlusIcon } from "../../components/icons";
 
 const usageCell = (used: number, max: number | null, fmt: (n: number) => string = String) => (
   <span className="mono nowrap">{fmt(used)} <span className="faint">/ {max == null ? "∞" : fmt(max)}</span></span>
@@ -26,7 +27,7 @@ export function AdminUsers() {
           <h1>{t("Users")}</h1>
           <p>{t("Everyone who can sign in, and the limits you give them. Everything is free; limits only protect your server.")}</p>
         </div>
-        <Button variant="primary" onClick={() => setCreating(true)}>{t("New user")}</Button>
+        <Button variant="primary" icon={<UserPlusIcon size={16} />} onClick={() => setCreating(true)}>{t("New user")}</Button>
       </div>
       <div className="card table-wrap">
         <table className="table">
@@ -109,7 +110,7 @@ function CreateUser({ onClose, onCreated }: { onClose: () => void; onCreated: (u
       footer={
         <>
           <Button onClick={onClose}>{t("Cancel")}</Button>
-          <Button variant="primary" loading={busy} disabled={!username || !draft} onClick={async () => {
+          <Button variant="primary" icon={<UserPlusIcon size={16} />} loading={busy} disabled={!username || !draft} onClick={async () => {
             setBusy(true);
             setError("");
             try {

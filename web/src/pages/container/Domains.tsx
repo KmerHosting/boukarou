@@ -3,6 +3,7 @@ import { del, post } from "../../lib/api";
 import { t } from "../../lib/i18n";
 import type { Instance } from "../../lib/types";
 import { Button, ConfirmModal, Field, Loading, useApi, useToast } from "../../components/ui";
+import { DomainIcon, ExternalIcon, PlusIcon, TrashIcon } from "../../components/icons";
 
 type Domain = { id: string; domain: string; targetPort: number; status: string; error: string | null };
 type Resp = { available: boolean; reason: string | null; publicHost: string | null; domains: Domain[] };
@@ -41,7 +42,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
       <section className="card">
         <div className="card-head">
           <div>
-            <h2>{t("Add a domain")}</h2>
+            <h2 className="h-icon"><DomainIcon size={18} />{t("Add a domain")}</h2>
             <p>{t("Serve a website from this container on your own domain, with a free HTTPS certificate.")}</p>
           </div>
         </div>
@@ -62,7 +63,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
                 <Field label={t("Port")} htmlFor="port">
                   <input id="port" className="input mono" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value.replace(/\D/g, ""))} />
                 </Field>
-                <Button type="submit" variant="primary" loading={busy} disabled={!domain || !port}>{t("Add domain")}</Button>
+                <Button type="submit" variant="primary" icon={<PlusIcon size={16} weight="bold" />} loading={busy} disabled={!domain || !port}>{t("Add domain")}</Button>
               </div>
               {error && <p className="form-error">{error}</p>}
             </form>
@@ -78,7 +79,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
             <div key={d.id} className="list-row">
               <div style={{ minWidth: 0 }}>
                 <div className="mono">
-                  {d.status === "active" ? <a href={`https://${d.domain}`} target="_blank" rel="noreferrer">{d.domain}</a> : d.domain}
+                  {d.status === "active" ? <a href={`https://${d.domain}`} target="_blank" rel="noreferrer" className="ext-link">{d.domain}<ExternalIcon size={13} /></a> : d.domain}
                   <span className="faint"> → :{d.targetPort}</span>
                 </div>
                 {d.error && <div className="hint" style={{ color: "var(--bad)" }}>{d.error}</div>}
@@ -87,7 +88,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
                 <span className={`tag ${d.status === "active" ? "tag-ok" : d.status === "failed" ? "tag-bad" : "tag-warn"}`}>
                   {d.status === "active" ? t("HTTPS active") : d.status === "failed" ? t("Failed") : d.status === "deleting" ? t("Removing") : t("Issuing certificate")}
                 </span>
-                {d.status !== "deleting" && d.status !== "provisioning" && <Button size="sm" variant="danger" onClick={() => setRemove(d)}>{t("Remove")}</Button>}
+                {d.status !== "deleting" && d.status !== "provisioning" && <Button size="sm" variant="danger" icon={<TrashIcon size={15} />} onClick={() => setRemove(d)}>{t("Remove")}</Button>}
               </div>
             </div>
           ))
@@ -99,6 +100,7 @@ export function DomainsTab({ inst }: { inst: Instance }) {
           title={t("Remove {d}?", { d: remove.domain })}
           description={t("The domain stops pointing to this container and its certificate is deleted.")}
           action={t("Remove domain")}
+          icon={<TrashIcon size={16} />}
           onClose={() => setRemove(null)}
           onConfirm={async () => {
             await del(`/api/instances/${inst.id}/domains/${remove.id}`);

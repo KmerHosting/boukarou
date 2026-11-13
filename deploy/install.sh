@@ -96,7 +96,7 @@ else
   git clone --depth 1 --branch "$BRANCH" "$REPO" "$APP"
 fi
 cd "$APP"
-npm ci --no-audit --no-fund
+npm ci --include=dev --no-audit --no-fund
 npm run build
 npm prune --omit=dev --no-audit --no-fund
 

@@ -13,6 +13,7 @@ case "${1:-help}" in
     bad() { printf '  \033[31m✗\033[0m %s\n' "$1"; }
     echo "Boukarou doctor"
     systemctl is-active --quiet boukarou && ok "service running" || bad "service not running (journalctl -u boukarou -n 50)"
+    for _ in 1 2 3 4 5; do curl -fsS --max-time 2 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && break; sleep 1; done
     curl -fsS --max-time 5 "http://127.0.0.1:${PORT}/api/health" >/dev/null && ok "panel answers on port ${PORT}" || bad "panel does not answer on port ${PORT}"
     command -v lxc >/dev/null && lxc query /1.0 >/dev/null 2>&1 && ok "LXD reachable ($(lxc version 2>/dev/null | awk '/Server/{print $3}'))" || bad "LXD not reachable"
     lxc project show "${BOUKAROU_PROJECT:-boukarou}" >/dev/null 2>&1 && ok "LXD project ${BOUKAROU_PROJECT:-boukarou}" || bad "LXD project ${BOUKAROU_PROJECT:-boukarou} missing (restart the service)"
@@ -27,10 +28,11 @@ case "${1:-help}" in
     cd "$APP"
     git fetch --depth 1 origin "${BOUKAROU_BRANCH:-main}"
     git reset --hard "origin/${BOUKAROU_BRANCH:-main}"
-    npm ci --no-audit --no-fund
+    npm ci --include=dev --no-audit --no-fund   # NODE_ENV=production is set above; the build needs dev deps
     npm run build
     npm prune --omit=dev --no-audit --no-fund
     systemctl restart boukarou
+    for _ in $(seq 1 20); do curl -fsS --max-time 2 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && break; sleep 1; done
     echo "Updated to $(node -p "require('./package.json').version")."
     ;;
   logs) exec journalctl -u boukarou -f ;;

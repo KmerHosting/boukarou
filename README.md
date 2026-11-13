@@ -23,6 +23,8 @@ Boukarou is the open-source edition of [KmerHosting LXC](https://lxc.kmerhosting
 - Custom domains: point a domain at the server and get HTTPS through Let's Encrypt.
 - Two-factor sign-in (TOTP), English and French, light and dark themes.
 
+![Containers list](docs/containers.png)
+
 **For the administrator** (`/admin`)
 - Create users with a username and a temporary password. Users choose their own password at first sign-in.
 - Per-user limits, each one optional: containers, total vCPU, memory and disk, snapshots per container, monthly traffic per container, domains.

@@ -1,0 +1,41 @@
+{
+  "name": "boukarou",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Free, self-hosted LXC container panel. Users, limits, SSH, web terminal, snapshots, metrics and domains on your own server.",
+  "license": "MIT",
+  "repository": "https://github.com/KmerHosting/boukarou",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "node --watch server/index.js",
+    "dev:web": "vite",
+    "build": "tsc -p web --noEmit && vite build",
+    "start": "NODE_ENV=production node server/index.js",
+    "check": "node --check server/index.js && node --check server/cli.js && tsc -p web --noEmit",
+    "test": "node --test test/*.test.js",
+    "i18n": "node --experimental-strip-types scripts/i18n-check.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router": "^7.9.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.1.0"
+  }
+}

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# boukarou — command-line administration for the Boukarou panel.
+set -Eeuo pipefail
+APP=/opt/boukarou
+ENV_FILE=/etc/boukarou/boukarou.env
+[[ "${EUID:-$(id -u)}" -eq 0 ]] || { echo "Run as root: sudo boukarou $*" >&2; exit 1; }
+[[ -f "$ENV_FILE" ]] || { echo "Boukarou is not installed (missing $ENV_FILE)." >&2; exit 1; }
+set -a; . "$ENV_FILE"; set +a
+
+case "${1:-help}" in
+  doctor)
+    ok() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
+    bad() { printf '  \033[31m✗\033[0m %s\n' "$1"; }
+    echo "Boukarou doctor"
+    systemctl is-active --quiet boukarou && ok "service running" || bad "service not running (journalctl -u boukarou -n 50)"
+    curl -fsS --max-time 5 "http://127.0.0.1:${PORT}/api/health" >/dev/null && ok "panel answers on port ${PORT}" || bad "panel does not answer on port ${PORT}"
+    command -v lxc >/dev/null && lxc query /1.0 >/dev/null 2>&1 && ok "LXD reachable ($(lxc version 2>/dev/null | awk '/Server/{print $3}'))" || bad "LXD not reachable"
+    lxc project show "${BOUKAROU_PROJECT:-boukarou}" >/dev/null 2>&1 && ok "LXD project ${BOUKAROU_PROJECT:-boukarou}" || bad "LXD project ${BOUKAROU_PROJECT:-boukarou} missing (restart the service)"
+    driver=$(lxc storage show "${BOUKAROU_POOL:-default}" 2>/dev/null | awk '/^driver:/{print $2}')
+    [[ -n "$driver" ]] && ok "storage pool ${BOUKAROU_POOL:-default} (${driver})" || bad "storage pool ${BOUKAROU_POOL:-default} missing"
+    [[ "$driver" == "dir" ]] && echo "    note: the dir driver does not enforce disk sizes"
+    command -v nginx >/dev/null && ok "nginx installed (custom domains)" || echo "  - nginx not installed: custom domains are disabled"
+    command -v certbot >/dev/null && ok "certbot installed" || echo "  - certbot not installed: custom domains are disabled"
+    node "$APP/server/cli.js" info | sed 's/^/    /'
+    ;;
+  update)
+    cd "$APP"
+    git fetch --depth 1 origin "${BOUKAROU_BRANCH:-main}"
+    git reset --hard "origin/${BOUKAROU_BRANCH:-main}"
+    npm ci --no-audit --no-fund
+    npm run build
+    npm prune --omit=dev --no-audit --no-fund
+    systemctl restart boukarou
+    echo "Updated to $(node -p "require('./package.json').version")."
+    ;;
+  logs) exec journalctl -u boukarou -f ;;
+  restart) systemctl restart boukarou && echo "Restarted." ;;
+  uninstall) exec bash "$APP/deploy/uninstall.sh" ;;
+  *) cd "$APP" && exec node server/cli.js "$@" ;;
+esac

@@ -41,13 +41,15 @@ APT=(apt-get -o Acquire::Retries=3 -q)
 "${APT[@]}" update
 "${APT[@]}" install -y ca-certificates curl git snapd btrfs-progs
 
-node_ok() { command -v node >/dev/null && node -e 'const [a,b]=process.versions.node.split(".").map(Number);process.exit(a>22||(a===22&&b>=13)?0:1)'; }
-if ! node_ok; then
-  say "Installing Node.js 24"
-  curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-  "${APT[@]}" install -y nodejs
+# Bun runs the panel and builds the interface.
+BUN=/usr/local/bin/bun
+if [[ ! -x "$BUN" ]]; then
+  say "Installing Bun"
+  "${APT[@]}" install -y unzip
+  curl -fsSL https://bun.sh/install | BUN_INSTALL=/opt/bun bash >/dev/null
+  ln -sf /opt/bun/bin/bun "$BUN"
 fi
-node_ok || die "Node.js 22.13 or newer is required."
+"$BUN" --version >/dev/null || die "Bun could not be installed."
 
 WITH_DOMAINS=1
 [[ -n "${BOUKAROU_NO_DOMAINS:-}" ]] && WITH_DOMAINS=0
@@ -96,9 +98,7 @@ else
   git clone --depth 1 --branch "$BRANCH" "$REPO" "$APP"
 fi
 cd "$APP"
-npm ci --include=dev --no-audit --no-fund
-npm run build
-npm prune --omit=dev --no-audit --no-fund
+"$BUN" run build
 
 HOST=0.0.0.0
 [[ -n "${BOUKAROU_DOMAIN:-}" ]] && HOST=127.0.0.1

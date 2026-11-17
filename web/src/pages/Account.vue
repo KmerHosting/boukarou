@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { KeyRoundIcon, LanguagesIcon, LogOutIcon, ShieldCheckIcon, ShieldOffIcon } from '@lucide/vue'
+import { CalendarIcon, KeyRoundIcon, ShieldIcon, UserIcon, LanguagesIcon, LogOutIcon, ShieldCheckIcon, ShieldOffIcon } from '@lucide/vue'
 import { useColorMode } from '@vueuse/core'
 import QRCode from 'qrcode'
 import { computed, ref } from 'vue'
@@ -111,9 +111,10 @@ async function revoke() {
 <template>
   <div v-if="user">
     <h2 class="text-2xl font-semibold tracking-tight">{{ t('Account & security') }}</h2>
-    <p class="text-muted-foreground text-sm">
-      <span class="font-mono">{{ user.username }}</span> | {{ isAdmin ? t('Administrator') : t('User') }} |
-      {{ t('Member since {d}', { d: date(user.createdAt) }) }}
+    <p class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <span class="inline-flex items-center gap-1.5"><UserIcon class="size-3.5 opacity-60" /><span class="font-mono">{{ user.username }}</span></span>
+      <span class="inline-flex items-center gap-1.5"><ShieldIcon class="size-3.5 opacity-60" />{{ isAdmin ? t('Administrator') : t('User') }}</span>
+      <span class="inline-flex items-center gap-1.5"><CalendarIcon class="size-3.5 opacity-60" />{{ t('Member since {d}', { d: date(user.createdAt) }) }}</span>
     </p>
   </div>
 

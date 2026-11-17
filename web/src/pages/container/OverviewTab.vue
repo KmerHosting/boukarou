@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InOut from '@/components/app/InOut.vue'
 import { ActivityIcon, ChartLineIcon, GlobeIcon, KeyRoundIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import CopyLine from '@/components/app/CopyLine.vue'
@@ -58,7 +59,7 @@ const pct = (n: number) => `${Math.round(n)}%`
           <dd class="font-mono">{{ last ? bytes(last.diskUsed) : '-' }} <span class="text-muted-foreground">/ {{ inst.diskGb }} GB</span></dd>
           <dt class="text-muted-foreground">{{ t('Processes') }}</dt><dd class="font-mono">{{ d.live?.processes ?? '-' }}</dd>
           <dt class="text-muted-foreground">{{ t('Network') }}</dt>
-          <dd class="font-mono">↓ {{ last ? rate(last.rx) : '-' }} | ↑ {{ last ? rate(last.tx) : '-' }}</dd>
+          <dd><InOut :down="last ? rate(last.rx) : '-'" :up="last ? rate(last.tx) : '-'" /></dd>
         </dl>
       </CardContent>
     </Card>
@@ -73,10 +74,8 @@ const pct = (n: number) => `${Math.round(n)}%`
       </CardHeader>
       <CardContent class="flex flex-col gap-3">
         <Progress v-if="quotaBytes != null" :model-value="Math.min(100, (used / quotaBytes) * 100)" />
-        <p class="text-muted-foreground text-sm">
-          ↓ {{ bytes(d.traffic.rx) }} {{ t('received') }} | ↑ {{ bytes(d.traffic.tx) }} {{ t('sent') }}
-          <span v-if="inst.trafficBlocked" class="text-destructive"> | {{ t('Quota reached: network is limited until next month.') }}</span>
-        </p>
+        <InOut class="text-muted-foreground text-sm" :down="bytes(d.traffic.rx)" :up="bytes(d.traffic.tx)" :down-label="t('received')" :up-label="t('sent')" />
+        <p v-if="inst.trafficBlocked" class="text-destructive text-sm">{{ t('Quota reached: network is limited until next month.') }}</p>
       </CardContent>
     </Card>
 

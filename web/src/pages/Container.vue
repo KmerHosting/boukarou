@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Specs from '@/components/app/Specs.vue'
 import {
   ActivityIcon, ChevronRightIcon, CircleCheckIcon, ExpandIcon, GaugeIcon, GlobeIcon, LoaderCircleIcon, PlayIcon,
   RotateCcwIcon, RotateCwIcon, SettingsIcon, SnowflakeIcon, SquareIcon, SquareTerminalIcon, SunIcon, Trash2Icon,
@@ -130,10 +131,10 @@ const goTab = (key: string | number) => router.replace(key === 'overview' ? `/c/
       <OsLogo :family="inst.image.family" size="lg" />
       <div class="min-w-0 flex-1">
         <h2 class="truncate font-mono text-2xl font-semibold tracking-tight">{{ inst.name }}</h2>
-        <div class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+        <div class="text-muted-foreground mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <InstanceStatus :status="status" :busy="inst.busy" />
           <span>{{ inst.image.name }} {{ inst.image.version }}</span>
-          <span class="font-mono">{{ inst.cpu }} vCPU | {{ memory(inst.memoryMb) }} | {{ inst.diskGb }} GB</span>
+          <Specs :cpu="inst.cpu" :memory-mb="inst.memoryMb" :disk-gb="inst.diskGb" />
           <span v-if="inst.owner && !mine">
             {{ t('Owner') }}: <RouterLink :to="`/admin/users/${inst.owner.id}`" class="text-foreground font-mono hover:underline">{{ inst.owner.username }}</RouterLink>
           </span>

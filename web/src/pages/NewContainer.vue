@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Specs from '@/components/app/Specs.vue'
 import { CpuIcon, HardDriveIcon, KeyRoundIcon, PlusIcon, ShuffleIcon, TagIcon } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -197,7 +198,7 @@ const clampInt = (value: string | number, min: number, max: number | null) => {
                 @click="applyPreset(p)"
               >
                 <div class="text-sm font-medium">{{ t(p.label) }}</div>
-                <div class="text-muted-foreground font-mono text-xs">{{ p.cpu }} vCPU | {{ memory(p.mem) }} | {{ p.disk }} GB</div>
+                <Specs class="text-muted-foreground mt-1 text-xs" :cpu="p.cpu" :memory-mb="p.mem" :disk-gb="p.disk" />
               </button>
             </div>
             <div class="grid gap-4 sm:grid-cols-3">

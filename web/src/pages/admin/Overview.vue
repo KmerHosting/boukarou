@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ActivityIcon, ChevronRightIcon, ContainerIcon, CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon, TriangleAlertIcon, UserPlusIcon } from '@lucide/vue'
+import InOut from '@/components/app/InOut.vue'
+import { ActivityIcon, ChevronRightIcon, ClockIcon, MonitorIcon, ContainerIcon, CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon, TriangleAlertIcon, UserPlusIcon } from '@lucide/vue'
 import { computed } from 'vue'
 import EventList from '@/components/app/EventList.vue'
 import LoadError from '@/components/LoadError.vue'
@@ -34,8 +35,10 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
   <div class="flex flex-wrap items-end justify-between gap-3">
     <div>
       <h2 class="text-2xl font-semibold tracking-tight">{{ t('Overview') }}</h2>
-      <p v-if="data" class="text-muted-foreground text-sm">
-        <span class="font-mono">{{ data.host.hostname }}</span> | {{ data.host.platform }} | {{ t('up {d}', { d: duration(data.host.uptime) }) }}
+      <p v-if="data" class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        <span class="inline-flex items-center gap-1.5"><ServerIcon class="size-3.5 opacity-60" /><span class="font-mono">{{ data.host.hostname }}</span></span>
+        <span class="inline-flex items-center gap-1.5"><MonitorIcon class="size-3.5 opacity-60" />{{ data.host.platform }}</span>
+        <span class="inline-flex items-center gap-1.5"><ClockIcon class="size-3.5 opacity-60" />{{ t('up {d}', { d: duration(data.host.uptime) }) }}</span>
       </p>
     </div>
     <Button as-child><RouterLink to="/admin/users?new=1"><UserPlusIcon data-icon="inline-start" /> {{ t('New user') }}</RouterLink></Button>
@@ -64,8 +67,10 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
         <CardHeader><CardDescription class="flex items-center gap-2"><ContainerIcon class="size-4" /> {{ t('Containers') }}</CardDescription></CardHeader>
         <CardContent class="flex flex-col gap-1">
           <div class="text-3xl font-semibold tabular-nums">{{ data.counts.total }}</div>
-          <p class="text-muted-foreground text-xs">
-            {{ t('{r} running | {s} stopped', { r: data.counts.running || 0, s: data.counts.stopped || 0 }) }}<template v-if="data.counts.failed"> | {{ t('{f} failed', { f: data.counts.failed }) }}</template>
+          <p class="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+            <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-emerald-500" />{{ t('{r} running', { r: data.counts.running || 0 }) }}</span>
+            <span class="inline-flex items-center gap-1.5"><span class="bg-muted-foreground/50 size-1.5 rounded-full" />{{ t('{s} stopped', { s: data.counts.stopped || 0 }) }}</span>
+            <span v-if="data.counts.failed" class="inline-flex items-center gap-1.5"><span class="bg-destructive size-1.5 rounded-full" />{{ t('{f} failed', { f: data.counts.failed }) }}</span>
           </p>
         </CardContent>
       </Card>
@@ -73,7 +78,7 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
         <CardHeader><CardDescription class="flex items-center gap-2"><CpuIcon class="size-4" /> {{ t('CPU') }}</CardDescription></CardHeader>
         <CardContent class="flex flex-col gap-2">
           <div class="text-3xl font-semibold tabular-nums">{{ data.host.load[0]!.toFixed(2) }}</div>
-          <p class="text-muted-foreground text-xs">{{ t('load on {n} cores | {a} vCPU allocated', { n: data.host.cpus, a: data.counts.cpu }) }}</p>
+          <div class="text-muted-foreground text-xs"><p>{{ t('load on {n} cores', { n: data.host.cpus }) }}</p><p>{{ t('{a} vCPU allocated', { a: data.counts.cpu }) }}</p></div>
           <Progress :model-value="Math.min(100, (data.host.load[0]! / data.host.cpus) * 100)" />
         </CardContent>
       </Card>
@@ -81,7 +86,7 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
         <CardHeader><CardDescription class="flex items-center gap-2"><MemoryStickIcon class="size-4" /> {{ t('Memory') }}</CardDescription></CardHeader>
         <CardContent class="flex flex-col gap-2">
           <div class="text-3xl font-semibold tabular-nums">{{ bytes(memUsed) }}</div>
-          <p class="text-muted-foreground text-xs">{{ t('of {t} | {a} allocated', { t: bytes(data.host.memTotal), a: memory(data.counts.memory_mb) }) }}</p>
+          <div class="text-muted-foreground text-xs"><p>{{ t('of {t}', { t: bytes(data.host.memTotal) }) }}</p><p>{{ t('{a} allocated', { a: memory(data.counts.memory_mb) }) }}</p></div>
           <Progress :model-value="(memUsed / data.host.memTotal) * 100" />
         </CardContent>
       </Card>
@@ -89,9 +94,10 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
         <CardHeader><CardDescription class="flex items-center gap-2"><HardDriveIcon class="size-4" /> {{ t('Storage pool') }}</CardDescription></CardHeader>
         <CardContent class="flex flex-col gap-2">
           <div class="text-3xl font-semibold tabular-nums">{{ data.pool ? bytes(data.pool.used) : '-' }}</div>
-          <p class="text-muted-foreground text-xs">
-            {{ data.pool ? t('of {t} | {a} GB allocated', { t: bytes(data.pool.total), a: data.counts.disk_gb }) : t('unknown') }}
-          </p>
+          <div class="text-muted-foreground text-xs">
+            <template v-if="data.pool"><p>{{ t('of {t}', { t: bytes(data.pool.total) }) }}</p><p>{{ t('{a} GB allocated', { a: data.counts.disk_gb }) }}</p></template>
+            <p v-else>{{ t('unknown') }}</p>
+          </div>
           <Progress v-if="data.pool && data.pool.total" :model-value="(data.pool.used / data.pool.total) * 100" />
         </CardContent>
       </Card>
@@ -112,7 +118,7 @@ const memUsed = computed(() => (data.value ? data.value.host.memTotal - data.val
             <dt class="text-muted-foreground">{{ t('Bridge') }}</dt><dd class="font-mono">{{ data.network }}</dd>
             <dt class="text-muted-foreground">{{ t('Public address') }}</dt><dd class="font-mono">{{ data.settings.publicHost || '-' }}</dd>
             <dt class="text-muted-foreground">{{ t('Users') }}</dt><dd>{{ data.counts.users }}</dd>
-            <dt class="text-muted-foreground">{{ t('Traffic this month') }}</dt><dd class="font-mono">↓ {{ bytes(data.traffic.rx) }} | ↑ {{ bytes(data.traffic.tx) }}</dd>
+            <dt class="text-muted-foreground">{{ t('Traffic this month') }}</dt><dd><InOut :down="bytes(data.traffic.rx)" :up="bytes(data.traffic.tx)" /></dd>
             <dt class="text-muted-foreground">{{ t('Version') }}</dt><dd class="font-mono">Boukarou {{ data.version }}</dd>
           </dl>
         </CardContent>

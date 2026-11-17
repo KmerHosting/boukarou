@@ -89,9 +89,10 @@ export function cookieToken(header: string | null) {
   return null
 }
 
+// Unref'd so the CLI, which also loads this module, can exit.
 setInterval(() => {
   db.query('DELETE FROM sessions WHERE expires_at < ? OR last_seen_at < ?').run(now(), now() - SESSION_IDLE)
-}, 3600_000)
+}, 3600_000).unref()
 
 // ---- brute-force protection ------------------------------------------------
 

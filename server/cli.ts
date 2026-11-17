@@ -123,3 +123,6 @@ switch (cmd) {
     line('  uninstall                        remove the panel (containers are kept)')
     process.exitCode = cmd ? 1 : 0
 }
+
+// Nothing should keep a one-shot command alive.
+process.exit()

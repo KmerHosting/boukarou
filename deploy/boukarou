@@ -31,7 +31,7 @@ case "${1:-help}" in
   update)
     cd "$APP"
     git fetch --depth 1 origin "${BOUKAROU_BRANCH:-main}"
-    git reset --hard "origin/${BOUKAROU_BRANCH:-main}"
+    git reset --hard FETCH_HEAD
     "$BUN" upgrade >/dev/null 2>&1 || true
     "$BUN" run build
     systemctl restart boukarou

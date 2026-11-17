@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BanIcon, CheckIcon, ChevronRightIcon, CpuIcon, KeyRoundIcon, ShieldOffIcon, Trash2Icon } from '@lucide/vue'
+import { BanIcon, CalendarIcon, LogInIcon, UserIcon, CheckIcon, ChevronRightIcon, CpuIcon, KeyRoundIcon, ShieldOffIcon, Trash2Icon } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
@@ -71,8 +71,10 @@ async function save() {
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
         <h2 class="font-mono text-2xl font-semibold tracking-tight">{{ u.username }}</h2>
-        <p class="text-muted-foreground flex flex-wrap items-center gap-x-2 text-sm">
-          {{ isAdmin ? t('Administrator') : t('User') }} | {{ t('created {d}', { d: date(u.createdAt) }) }} | {{ t('last sign-in {d}', { d: ago(u.lastLoginAt) }) }}
+        <p class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <span class="inline-flex items-center gap-1.5"><UserIcon class="size-3.5 opacity-60" />{{ isAdmin ? t('Administrator') : t('User') }}</span>
+          <span class="inline-flex items-center gap-1.5"><CalendarIcon class="size-3.5 opacity-60" />{{ t('created {d}', { d: date(u.createdAt) }) }}</span>
+          <span class="inline-flex items-center gap-1.5"><LogInIcon class="size-3.5 opacity-60" />{{ t('last sign-in {d}', { d: ago(u.lastLoginAt) }) }}</span>
           <Badge v-if="u.disabled" variant="destructive">{{ t('Disabled') }}</Badge>
         </p>
       </div>

@@ -92,7 +92,7 @@ install -d -m 755 "$APP" "$CONF"
 install -d -m 700 "$DATA"
 if [[ -d "$APP/.git" ]]; then
   git -C "$APP" fetch --depth 1 origin "$BRANCH"
-  git -C "$APP" reset --hard "origin/$BRANCH"
+  git -C "$APP" reset --hard FETCH_HEAD
 else
   rm -rf "$APP"
   git clone --depth 1 --branch "$BRANCH" "$REPO" "$APP"

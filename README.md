@@ -43,7 +43,7 @@ curl -fsSL https://raw.githubusercontent.com/KmerHosting/boukarou/main/deploy/in
 ```
 
 The installer:
-- installs Node.js, LXD, nginx and certbot;
+- installs Bun, LXD, nginx and certbot;
 - creates a btrfs storage pool so disk limits are enforced;
 - starts the panel on port **1974**;
 - prints the administrator's username and generated password, **once**.
@@ -103,12 +103,13 @@ The administrator can also reset a user's password or two-factor sign-in from **
 
 ## How it works
 
-- **One process.** An Express server holds the API, the web app and the terminal WebSocket. It runs as the `boukarou` systemd service.
-- **SQLite** (`node:sqlite`) stores accounts, sessions, containers, metrics and activity in `/var/lib/boukarou/panel.db`. No external database is needed.
+- **One process.** A [Bun](https://bun.sh) server holds the API, the web app and the terminal WebSocket. It runs as the `boukarou` systemd service.
+- **The interface** is Vue 3 with [shadcn-vue](https://www.shadcn-vue.com) and Tailwind CSS, built into `web/dist` and served by the same process.
+- **SQLite** (`bun:sqlite`) stores accounts, sessions, containers, metrics and activity in `/var/lib/boukarou/panel.db`. No external database is needed.
 - **LXD** runs the containers in a dedicated project (`boukarou`) on a dedicated bridge (`boukaroubr0`), apart from anything else on the host.
   - Each container gets a fixed private IPv4 address.
   - Its SSH port is forwarded with an LXD proxy device.
-- **The browser terminal** connects straight to LXD's interactive exec API over the local socket.
+- **The browser terminal** runs `lxc exec` in a pseudo-terminal on the host and streams it over a WebSocket.
 - **Metrics** are sampled every minute and kept for 7 days. Traffic is counted per calendar month.
 - **Custom domains** each get an nginx site (`boukarou-domain-*.conf`) and a Let's Encrypt certificate, issued with the webroot method.
 
@@ -117,19 +118,19 @@ The administrator can also reset a user's password or two-factor sign-in from **
 ## Security notes
 
 - The panel has full control over LXD on the host. Only create accounts for people you trust with a Linux root shell.
-- Passwords are hashed with scrypt. Sign-in is rate-limited, sessions are kept server-side and can be revoked, and two-factor sign-in is available.
+- Passwords are hashed with Argon2id. Sign-in is rate-limited, sessions are kept server-side and can be revoked, and two-factor sign-in is available.
 - Every request that changes something must carry a custom header, which blocks cross-site form attacks. The terminal only accepts connections from the panel's own page.
 - For use over the Internet, serve the panel over HTTPS (`BOUKAROU_DOMAIN`).
 
 ## Development
 
 ```bash
-npm install
-npm run dev          # API on :1974; uses ./data and the local LXD
-npm run dev:web      # Vite on :5174, proxies /api
-npm run check        # syntax + type checks
-npm test
-npm run i18n         # list untranslated French strings
+bun install && (cd web && bun install)
+bun run dev          # API on :1974; uses ./data and the local LXD
+bun run dev:web      # Vite dev server, proxies /api and the terminal
+bun run check        # type checks for the server and the interface
+bun run build        # build the interface into web/dist
+bun run i18n         # list untranslated French strings
 ```
 
 Environment variables (all optional): `PORT`, `HOST`, `BOUKAROU_DATA_DIR`, `BOUKAROU_PROJECT`, `BOUKAROU_NETWORK`, `BOUKAROU_POOL`, `BOUKAROU_MANAGE_UFW=false`, `BOUKAROU_RESERVED_DOMAINS`.

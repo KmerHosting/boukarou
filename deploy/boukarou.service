@@ -1,14 +1,14 @@
 [Unit]
 Description=Boukarou - self-hosted LXC panel
 Documentation=https://github.com/KmerHosting/boukarou
-After=network-online.target snap.lxd.daemon.service lxd.service incus.service
+After=network-online.target snap.lxd.daemon.service lxd.service
 Wants=network-online.target
 
 [Service]
 Type=simple
 EnvironmentFile=/etc/boukarou/boukarou.env
 WorkingDirectory=/opt/boukarou
-ExecStart=/usr/bin/env node server/index.js
+ExecStart=/usr/local/bin/bun server/index.ts
 Restart=on-failure
 RestartSec=5
 # The panel drives LXD, nginx, certbot and ufw, so it runs as root.

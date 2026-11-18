@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Boukarou installer — free, self-hosted LXC panel.
 #
-#   curl -fsSL https://raw.githubusercontent.com/KmerHosting/boukarou/main/deploy/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/toscani-tenekeu/boukarou/main/deploy/install.sh | sudo bash
 #
 # Options (environment variables):
 #   BOUKAROU_PORT=1974            panel port
@@ -12,7 +12,7 @@
 #   BOUKAROU_BRANCH=main
 set -Eeuo pipefail
 
-REPO="${BOUKAROU_REPO:-https://github.com/KmerHosting/boukarou.git}"
+REPO="${BOUKAROU_REPO:-https://github.com/toscani-tenekeu/boukarou.git}"
 BRANCH="${BOUKAROU_BRANCH:-main}"
 PORT="${BOUKAROU_PORT:-1974}"
 APP=/opt/boukarou

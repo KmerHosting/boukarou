@@ -1,6 +1,6 @@
 [Unit]
 Description=Boukarou - self-hosted LXC panel
-Documentation=https://github.com/KmerHosting/boukarou
+Documentation=https://github.com/toscani-tenekeu/boukarou
 After=network-online.target snap.lxd.daemon.service lxd.service
 Wants=network-online.target
 

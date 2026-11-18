@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Free, self-hosted LXC container panel. Users, limits, SSH, web terminal, snapshots, metrics and domains on your own server.",
   "license": "MIT",
-  "repository": "https://github.com/KmerHosting/boukarou",
+  "repository": "https://github.com/toscani-tenekeu/boukarou",
   "scripts": {
     "dev": "bun --watch server/index.ts",
     "dev:web": "cd web && bun run dev",

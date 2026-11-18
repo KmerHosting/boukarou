@@ -39,7 +39,7 @@ Boukarou is the open-source edition of [KmerHosting LXC](https://lxc.kmerhosting
 You need a fresh **Ubuntu 22.04, 24.04 or 26.04** server: a KVM VPS or a dedicated machine. It cannot be an LXC/OpenVZ container itself. Run as root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/KmerHosting/boukarou/main/deploy/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/toscani-tenekeu/boukarou/main/deploy/install.sh | sudo bash
 ```
 
 The installer:
@@ -53,7 +53,7 @@ Then open `http://SERVER_IP:1974/admin`.
 To serve the panel itself on a domain with HTTPS, create the DNS record first, then run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/KmerHosting/boukarou/main/deploy/install.sh | sudo BOUKAROU_DOMAIN=panel.example.com BOUKAROU_EMAIL=you@example.com bash
+curl -fsSL https://raw.githubusercontent.com/toscani-tenekeu/boukarou/main/deploy/install.sh | sudo BOUKAROU_DOMAIN=panel.example.com BOUKAROU_EMAIL=you@example.com bash
 ```
 
 ### Installer options
